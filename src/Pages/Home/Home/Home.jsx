@@ -4,14 +4,18 @@ import WhyChoose from '../StaticPart/WhyChoose';
 import CuratorsPicks from '../StaticPart/CuratorsPicks';
 import StatsAndMilestones from '../StaticPart/StatsAndMilestones';
 import FlashSaleCountdown from '../StaticPart/FlashSaleCountdown';
+import TopWebsite from '../LibraryBrand/TopWebsite';
+
 
 const Home = () => {
     return (
         <div>
             <Banner></Banner>
             <WhyChoose></WhyChoose>
-            <CuratorsPicks></CuratorsPicks>
             <FlashSaleCountdown></FlashSaleCountdown>
+            <CuratorsPicks></CuratorsPicks>
+            <TopWebsite></TopWebsite>
+           
         </div>
     );
 };
