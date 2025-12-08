@@ -17,7 +17,7 @@ const topLibraries = [
     name: "New York Public Library",
     location: "New York, USA",
     description:
-      "Iconic research and public library with vast collections and architectural grandeur.",
+      "Iconic research and public library with vast collections and architectural.",
     imageUrl: library1,
     link: "https://www.nypl.org/",
   },
@@ -33,7 +33,7 @@ const topLibraries = [
     name: "Library of Congress",
     location: "Washington, D.C., USA",
     description:
-      "The largest library in the world, serving as the research arm of the U.S. Congress.",
+      "The largest library in the world, serving as the research arm of the USA",
     imageUrl: library3,
     link: "https://www.loc.gov/",
   },
@@ -55,7 +55,8 @@ const topLibraries = [
   },
 ];
 
-const TopWebsite = () => { // Renamed component
+const TopWebsite = () => {
+  // Renamed component
   return (
     <section className="py-16 md:py-24 bg-base-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,7 +67,8 @@ const TopWebsite = () => { // Renamed component
             <span className="text-secondary">Greatest Libraries</span>
           </h2>
           <p className="mt-4 text-xl text-base-content max-w-3xl mx-auto opacity-70">
-            A look at the institutions that set the standard for knowledge and preservation.
+            A look at the institutions that set the standard for knowledge and
+            preservation.
           </p>
         </div>
 
@@ -89,14 +91,14 @@ const TopWebsite = () => { // Renamed component
             },
           }}
           // 💡 Custom class for styling arrows/dots externally
-          className="pb-16 swiper-library-showcase" 
+          className="pb-1 swiper-library-showcase"
         >
           {topLibraries.map((library, index) => (
             <SwiperSlide key={index} className="h-auto">
               {/* --- Library Card Content --- */}
               <div className="card bg-white shadow-xl overflow-hidden transition duration-500 transform hover:shadow-2xl hover:-translate-y-1 group">
                 {/* Image Area */}
-                <figure className="h-48 overflow-hidden">
+                <figure className="h-70 overflow-hidden">
                   <img
                     src={library.imageUrl}
                     alt={`Exterior of ${library.name}`}
@@ -112,7 +114,7 @@ const TopWebsite = () => { // Renamed component
                   </h3>
 
                   {/* Location - Styling refined for better visibility */}
-                  <p className="text-sm font-semibold text-primary mb-2 uppercase tracking-wider"> 
+                  <p className="text-sm font-semibold text-primary mb-2 uppercase tracking-wider">
                     {library.location}
                   </p>
 

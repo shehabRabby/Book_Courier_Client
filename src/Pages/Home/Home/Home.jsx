@@ -5,6 +5,7 @@ import CuratorsPicks from '../StaticPart/CuratorsPicks';
 import StatsAndMilestones from '../StaticPart/StatsAndMilestones';
 import FlashSaleCountdown from '../StaticPart/FlashSaleCountdown';
 import TopWebsite from '../LibraryBrand/TopWebsite';
+import CoverageCity from '../CoverageArea/CoverageCity';
 
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
             <Banner></Banner>
             <WhyChoose></WhyChoose>
             <FlashSaleCountdown></FlashSaleCountdown>
+            <CoverageCity></CoverageCity>
             <CuratorsPicks></CuratorsPicks>
             <TopWebsite></TopWebsite>
            
