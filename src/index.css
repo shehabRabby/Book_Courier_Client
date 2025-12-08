@@ -4,11 +4,11 @@
   tmemes: light --default;
 }
 
-@plugin "daisiui/theme" {
+@plugin "daisyui/theme" {
   name: "light";
   default:true;
-  --color-primary: "#37ff8b";
-  --color-secondary: blue;
+  --color-primary: blue;
+  --color-secondary: #DE2A8A;
 }
 
 /* body {

@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
 
 // 💡 STATIC DATA FOR THE CITY LIST (8 Districts)
 const staticDistricts = [
-    "Dhaka", "Chittagong", "Khulna", "Rajshahi", "Sylhet",
+    "Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet",
     "Barisal", "Rangpur", "Mymensingh",
 ];
 
@@ -215,7 +215,7 @@ const CoverageCity = () => {
                         style={{ height: "100%", width: "100%" }}
                         key={cityData.length} 
                     >
-                        <MapController center={currentMapCenter} zoom={10} /> 
+                        <MapController center={currentMapCenter} zoom={11} /> 
                         
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
