@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import useAuth from "../../../Hooks/useAuth";
+import axios from "axios";
 
 const Register = () => {
   const {
@@ -9,13 +10,36 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { registerUser} = useAuth();
+  const { registerUser, updateUserProfile } = useAuth();
 
   const handleRegistration = (data) => {
-    console.log("After Register : ", data);
+    console.log("Before Register : ", data);
+    const profileImage = data.photo[0];
+
     registerUser(data.email, data.password)
       .then((result) => {
-        console.log('After Register Succesfull : ',result.user);
+        console.log("After Register Succesfull : ", result.user);
+        //from data imageBB
+        const formData = new FormData();
+        formData.append("image", profileImage);
+        const image_Api_URL = `https://api.imgbb.com/1/upload?key=${
+          import.meta.env.VITE_image_host_Key
+        }`;
+        axios.post(image_Api_URL, formData).then((res) => {
+          console.log("Image Upload Response ", res.data.data.display_url);
+          //update user profile
+          const userProfile = {
+            displayName: data.name,
+            photoURL: res.data.data.display_url,
+          };
+          updateUserProfile(userProfile)
+            .then(() => {
+              console.log("User Profile update successfully");
+            })
+            .catch((error) => {
+              console.log("Error in Updating User profile: ", error.message);
+            });
+        });
       })
       .catch((error) => {
         console.log(error.message);
@@ -97,9 +121,13 @@ const Register = () => {
             <span class="label-text font-semibold">Profile Image</span>
           </label>
           <input
+            {...register("photo", { required: true })}
             type="file"
             class="file-input file-input-bordered file-input-md w-full"
           />
+          {errors.photo?.type === "required" && (
+            <span className="text-red-500">Photo is required</span>
+          )}
         </div>
 
         <div class="form-control mt-6">
