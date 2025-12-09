@@ -1,17 +1,41 @@
 import React from "react";
 import Logo from "../../../Components/Logo/Logo";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
+import useAuth from "../../../Hooks/useAuth";
 
 const Navbar = () => {
+  const { user, logOut } = useAuth();
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        console.log("Logout Successful");
+      })
+      .catch((error) => {
+        console.log("Logout error: ", error.mesage);
+      });
+  };
+
   const links = (
     <>
-      <li><NavLink to="/">Home</NavLink></li>
-      <li><NavLink to="/">Books</NavLink></li>
-      <li><NavLink to="/">Request Delivery</NavLink></li>
-      <li><NavLink to="/">Dashboard</NavLink></li>
-      <li><NavLink to="/about-us">About Us</NavLink></li>
-      <li><NavLink to="/">Sign Up</NavLink></li>
-      <li><NavLink to="/">Dashboard</NavLink></li>
+      <li>
+        <NavLink to="/">Home</NavLink>
+      </li>
+      <li>
+        <NavLink to="/">Books</NavLink>
+      </li>
+      <li>
+        <NavLink to="/">Request Delivery</NavLink>
+      </li>
+      <li>
+        <NavLink to="/">Dashboard</NavLink>
+      </li>
+      <li>
+        <NavLink to="/about-us">About Us</NavLink>
+      </li>
+      <li>
+        <NavLink to="/">Dashboard</NavLink>
+      </li>
     </>
   );
   return (
@@ -48,7 +72,18 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        {user ? (
+          <a onClick={handleLogOut} className="btn btn-secondary">
+            Log Out
+          </a>
+        ) : (
+          <Link to="/login" className="btn btn-secondary">
+            Login
+          </Link>
+        )}
+        <Link to="/login" className="btn btn-secondary ml-2">
+            Rider
+          </Link>
       </div>
     </div>
   );

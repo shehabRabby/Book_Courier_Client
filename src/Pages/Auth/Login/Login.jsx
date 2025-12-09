@@ -1,25 +1,46 @@
 import React from "react";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
-
+import useAuth from "../../../Hooks/useAuth";
 
 const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-    const { register, handleSubmit, formState: {errors}} = useForm();
-    
-      const handleLogin = (data) => {
-        console.log("After Register : ", data);
-      };
+  const { signInUser, signInGoogle } = useAuth();
+
+  const handleLogin = (data) => {
+    console.log("login data : ", data);
+    signInUser(data.email, data.password)
+      .then((result) => {
+        console.log("After Login Succesfull : ", result.user);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const handleGoogleSignIn = () => {
+    signInGoogle()
+      .then((result) => {
+        console.log("Google sign in Succesfully: ", result.user);
+      })
+      .catch((error) => {
+        console.log("Google sign in error: ", error.message);
+      });
+  };
 
   return (
     <div className="w-full">
       <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-        Sign In to Your Account
+        LogIn to Your Account
       </h2>
 
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
-
-       {/* Email Field  */}
+        {/* Email Field  */}
         <div class="form-control">
           <label class="label">
             <span class="label-text font-semibold">Email</span>
@@ -30,9 +51,9 @@ const Login = () => {
             placeholder="email@example.com"
             class="input input-bordered w-full"
           />
-          {
-            errors.email ?. type === "required" && <span className="text-red-500">Email is required</span>
-          }
+          {errors.email?.type === "required" && (
+            <span className="text-red-500">Email is required</span>
+          )}
         </div>
 
         {/* password field  */}
@@ -42,13 +63,23 @@ const Login = () => {
           </label>
           <input
             type="password"
-            {...register("password", { required: true, minLength: 6, pattern:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,}$/})}
+            {...register("password", {
+              required: true,
+              minLength: 6,
+              //  pattern:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,}$/
+            })}
             placeholder="Must be at least 6 characters"
             class="input input-bordered w-full"
           />
-          {errors.password ?. type === "required" && <span className="text-red-500">Password is required</span>}
-          {errors.password ?. type === "minLength" && <span className="text-red-500">Password must be 6 character or more</span>}
-          {errors.password ?. type === "pattern" && <span className="text-red-500">Password must be including uppercase,lowercase and special character.</span>}
+          {errors.password?.type === "required" && (
+            <span className="text-red-500">Password is required</span>
+          )}
+          {errors.password?.type === "minLength" && (
+            <span className="text-red-500">
+              Password must be 6 character or more
+            </span>
+          )}
+          {/* {errors.password ?. type === "pattern" && <span className="text-red-500">Password must be including uppercase,lowercase and special character.</span>} */}
         </div>
 
         {/* Submit Button */}
@@ -67,6 +98,7 @@ const Login = () => {
       {/* Social Login Button (Google) */}
       <div className="form-control">
         <button
+          onClick={handleGoogleSignIn}
           type="button"
           className="btn btn-outline w-full bg-white border-gray-300 hover:bg-gray-50 transition duration-300"
         >

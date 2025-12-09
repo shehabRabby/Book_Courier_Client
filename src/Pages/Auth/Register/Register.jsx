@@ -1,12 +1,25 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
+import useAuth from "../../../Hooks/useAuth";
 
 const Register = () => {
-  const { register, handleSubmit, formState: {errors}} = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const { registerUser} = useAuth();
 
   const handleRegistration = (data) => {
     console.log("After Register : ", data);
+    registerUser(data.email, data.password)
+      .then((result) => {
+        console.log('After Register Succesfull : ',result.user);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
 
   return (
@@ -25,9 +38,9 @@ const Register = () => {
             placeholder="Enter your full name"
             class="input input-bordered w-full"
           />
-          {
-            errors.name ?. type === "required" && <span className="text-red-500">Name is required</span>
-          }
+          {errors.name?.type === "required" && (
+            <span className="text-red-500">Name is required</span>
+          )}
         </div>
 
         {/* Email Field  */}
@@ -41,9 +54,9 @@ const Register = () => {
             placeholder="email@example.com"
             class="input input-bordered w-full"
           />
-          {
-            errors.email ?. type === "required" && <span className="text-red-500">Email is required</span>
-          }
+          {errors.email?.type === "required" && (
+            <span className="text-red-500">Email is required</span>
+          )}
         </div>
 
         {/* password field  */}
@@ -53,13 +66,29 @@ const Register = () => {
           </label>
           <input
             type="password"
-            {...register("password", { required: true, minLength: 6, pattern:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,}$/})}
+            {...register("password", {
+              required: true,
+              minLength: 6,
+              // pattern:
+              //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,}$/,
+            })}
             placeholder="Must be at least 6 characters"
             class="input input-bordered w-full"
           />
-          {errors.password ?. type === "required" && <span className="text-red-500">Password is required</span>}
-          {errors.password ?. type === "minLength" && <span className="text-red-500">Password must be 6 character or more</span>}
-          {errors.password ?. type === "pattern" && <span className="text-red-500">Password must be including uppercase,lowercase and special character.</span>}
+          {errors.password?.type === "required" && (
+            <span className="text-red-500">Password is required</span>
+          )}
+          {errors.password?.type === "minLength" && (
+            <span className="text-red-500">
+              Password must be 6 character or more
+            </span>
+          )}
+          {/* {errors.password?.type === "pattern" && (
+            <span className="text-red-500">
+              Password must be including uppercase,lowercase and special
+              character.
+            </span>
+          )} */}
         </div>
 
         {/* image field  */}
