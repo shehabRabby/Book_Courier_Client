@@ -11,11 +11,14 @@ import PrivateRoute from "./PrivateRoute";
 import DashboardLayout from "../Layout/DashboardLayout";
 import MyOrders from "../Pages/Dashboard/MyOrders/MyOrders";
 import MyProfile from "../Pages/Dashboard/MyOrders/MyProfile/MyProfile";
+import ErrorPage from "../Pages/ErrorPage/ErrorPage";
+import BookDetails from "../Pages/BookDetails/BookDetails";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayout,
+    errorElement: <ErrorPage></ErrorPage>,
     children: [
       {
         index: true,
@@ -24,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: "about-us",
         Component: AboutUs,
+      },
+      {
+        path: "/book/:id",
+        Component: BookDetails,
       },
       {
         path: "rider",
