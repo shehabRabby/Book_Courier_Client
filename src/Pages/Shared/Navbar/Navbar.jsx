@@ -33,9 +33,6 @@ const Navbar = () => {
       <li>
         <NavLink to="/about-us">About Us</NavLink>
       </li>
-      <li>
-        <NavLink to="/">Dashboard</NavLink>
-      </li>
     </>
   );
   return (
@@ -81,9 +78,9 @@ const Navbar = () => {
             Login
           </Link>
         )}
-        <Link to="/login" className="btn btn-secondary ml-2">
-            Rider
-          </Link>
+        <Link to="/rider" className="btn btn-secondary ml-2">
+          Rider
+        </Link>
       </div>
     </div>
   );

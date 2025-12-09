@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../Hooks/useAuth";
 
@@ -11,12 +11,15 @@ const Login = () => {
   } = useForm();
 
   const { signInUser, signInGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = (data) => {
     console.log("login data : ", data);
     signInUser(data.email, data.password)
       .then((result) => {
         console.log("After Login Succesfull : ", result.user);
+        navigate(location.state || "/", { replace: true });
       })
       .catch((error) => {
         console.log(error.message);
@@ -27,6 +30,7 @@ const Login = () => {
     signInGoogle()
       .then((result) => {
         console.log("Google sign in Succesfully: ", result.user);
+        navigate(location.state || "/", { replace: true });
       })
       .catch((error) => {
         console.log("Google sign in error: ", error.message);
@@ -134,6 +138,7 @@ const Login = () => {
         <p className="text-gray-600">
           Don't have an account?
           <Link
+            state={location.state}
             to="/register"
             className="link link-hover text-blue-600 font-semibold ml-1"
           >

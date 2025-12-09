@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../../Hooks/useAuth";
 import axios from "axios";
 
@@ -11,6 +11,8 @@ const Register = () => {
     formState: { errors },
   } = useForm();
   const { registerUser, updateUserProfile } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleRegistration = (data) => {
     console.log("Before Register : ", data);
@@ -19,6 +21,7 @@ const Register = () => {
     registerUser(data.email, data.password)
       .then((result) => {
         console.log("After Register Succesfull : ", result.user);
+      
         //from data imageBB
         const formData = new FormData();
         formData.append("image", profileImage);
@@ -35,6 +38,7 @@ const Register = () => {
           updateUserProfile(userProfile)
             .then(() => {
               console.log("User Profile update successfully");
+              navigate(location.state || "/", { replace: true });
             })
             .catch((error) => {
               console.log("Error in Updating User profile: ", error.message);
@@ -140,6 +144,7 @@ const Register = () => {
           <p className="text-gray-600">
             Already have an account?
             <Link
+              state={location.state}
               to="/login"
               className="link link-hover text-blue-600 font-semibold ml-1"
             >
