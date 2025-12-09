@@ -1,6 +1,6 @@
 import React from "react";
 import { FaBookOpen } from "react-icons/fa";
-import bookImg from "../../assets/toplibrary1.png"
+import bookImg from "../../assets/toplibrary1.png";
 import { Link } from "react-router";
 
 const LatestBookCard = ({ title, author, category }) => {
@@ -9,12 +9,8 @@ const LatestBookCard = ({ title, author, category }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:shadow-2xl hover:scale-[1.03] border border-gray-100">
       {/* Image Placeholder */}
-      <div className="h-60 flex items-center justify-center bg-indigo-100">
-        <img
-          src={bookImg}
-          alt={title}
-          className="w-full h-full object-cover"
-        />
+      <div className="h-44 flex items-center justify-center bg-indigo-100">
+        <img src={bookImg} alt={title} className="w-full h-full object-cover" />
       </div>
 
       <div className="p-4 text-center">
@@ -35,10 +31,10 @@ const LatestBookCard = ({ title, author, category }) => {
         </span>
 
         {/* See Details Button */}
-        <Link 
+        <Link
           to={`/book/1`}
           onClick={() => console.log(`Viewing details for: ${title}`)}
-          className="w-full flex items-center justify-center bg-[#ff0077] hover:bg-[#d60065] text-white font-medium py-2 px-4 rounded-lg transition duration-200 shadow-md"
+          className="w-full flex items-center justify-center bg-[#ff0077] hover:bg-[#d60065] text-white font-medium py-1 px-2 rounded-lg transition duration-200 shadow-md"
         >
           <FaBookOpen className="mr-2" />
           See Details

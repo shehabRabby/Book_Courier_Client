@@ -13,6 +13,7 @@ import MyOrders from "../Pages/Dashboard/MyOrders/MyOrders";
 import MyProfile from "../Pages/Dashboard/MyOrders/MyProfile/MyProfile";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import BookDetails from "../Pages/BookDetails/BookDetails";
+import AddBook from "../Pages/Dashboard/AddBook/AddBook";
 
 export const router = createBrowserRouter([
   {
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
       {
         path:"my-profile",
         Component: MyProfile,
+      },
+      {
+        path:"add-book",
+        Component: AddBook,
       }
     ]
   }

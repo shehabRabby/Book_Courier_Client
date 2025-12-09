@@ -1,8 +1,10 @@
+// Register.jsx
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../../Hooks/useAuth";
-import axios from "axios";
+import { imageUpload } from "../../../Utiles";
+
 
 const Register = () => {
   const {
@@ -14,48 +16,46 @@ const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleRegistration = (data) => {
+  const handleRegistration = async (data) => {
+    // ⬅️ MAKE IT ASYNC
     console.log("Before Register : ", data);
     const profileImage = data.photo[0];
 
-    registerUser(data.email, data.password)
-      .then((result) => {
-        console.log("After Register Succesfull : ", result.user);
-      
-        //from data imageBB
-        const formData = new FormData();
-        formData.append("image", profileImage);
-        const image_Api_URL = `https://api.imgbb.com/1/upload?key=${
-          import.meta.env.VITE_image_host_Key
-        }`;
-        axios.post(image_Api_URL, formData).then((res) => {
-          console.log("Image Upload Response ", res.data.data.display_url);
-          //update user profile
-          const userProfile = {
-            displayName: data.name,
-            photoURL: res.data.data.display_url,
-          };
-          updateUserProfile(userProfile)
-            .then(() => {
-              console.log("User Profile update successfully");
-              navigate(location.state || "/", { replace: true });
-            })
-            .catch((error) => {
-              console.log("Error in Updating User profile: ", error.message);
-            });
-        });
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    try {
+      // 1. Register the user
+      const result = await registerUser(data.email, data.password);
+      console.log("After Register Succesfull : ", result.user);
+
+      // 2. Upload the image using the reusable function
+      // The image data is the whole response object from ImgBB
+      const imageData = await imageUpload(profileImage);
+      const photoURL = imageData.data.display_url;
+      console.log("Image Upload URL ", photoURL);
+
+      // 3. Update user profile
+      const userProfile = {
+        displayName: data.name,
+        photoURL: photoURL,
+      };
+
+      await updateUserProfile(userProfile);
+
+      console.log("User Profile update successfully");
+      navigate(location.state || "/", { replace: true });
+    } catch (error) {
+      // Consolidated error handling for registration or image upload failure
+      console.error("Registration or Profile Update Error: ", error.message);
+      // You might want to show a toast or alert to the user here
+    }
   };
 
+  // ... rest of the component (return statement) remains the same
   return (
     <div class="card w-full max-w-sm shadow-2xl bg-white">
       <form onSubmit={handleSubmit(handleRegistration)} class="card-body">
         <h2 class="card-title text-2xl text-center mb-4">Register Now</h2>
 
-        {/* Name field  */}
+        {/* Name field  */}
         <div class="form-control">
           <label class="label">
             <span class="label-text font-semibold">Name</span>
@@ -71,7 +71,7 @@ const Register = () => {
           )}
         </div>
 
-        {/* Email Field  */}
+        {/* Email Field  */}
         <div class="form-control">
           <label class="label">
             <span class="label-text font-semibold">Email</span>
@@ -87,7 +87,7 @@ const Register = () => {
           )}
         </div>
 
-        {/* password field  */}
+        {/* password field  */}
         <div class="form-control">
           <label class="label">
             <span class="label-text font-semibold">Password</span>
@@ -97,8 +97,6 @@ const Register = () => {
             {...register("password", {
               required: true,
               minLength: 6,
-              // pattern:
-              //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,}$/,
             })}
             placeholder="Must be at least 6 characters"
             class="input input-bordered w-full"
@@ -111,15 +109,9 @@ const Register = () => {
               Password must be 6 character or more
             </span>
           )}
-          {/* {errors.password?.type === "pattern" && (
-            <span className="text-red-500">
-              Password must be including uppercase,lowercase and special
-              character.
-            </span>
-          )} */}
         </div>
 
-        {/* image field  */}
+        {/* image field  */}
         <div class="form-control">
           <label class="label">
             <span class="label-text font-semibold">Profile Image</span>
