@@ -8,6 +8,9 @@ import Login from "../Pages/Auth/Login/Login";
 import Register from "../Pages/Auth/Register/Register";
 import Rider from "../Pages/BookRider/Rider";
 import PrivateRoute from "./PrivateRoute";
+import DashboardLayout from "../Layout/DashboardLayout";
+import MyOrders from "../Pages/Dashboard/MyOrders/MyOrders";
+import MyProfile from "../Pages/Dashboard/MyOrders/MyProfile/MyProfile";
 
 export const router = createBrowserRouter([
   {
@@ -42,4 +45,19 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
+  {
+    path:"dashboard",
+    element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+    children: [
+      {
+        path:"my-orders",
+        Component: MyOrders,
+      },
+      {
+        path:"my-profile",
+        Component: MyProfile,
+      }
+    ]
+  }
 ]);
