@@ -1,22 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-    FaBookMedical,
-    FaBook,
-    FaUserEdit,
-    FaDollarSign,
-    FaCalendarAlt,
-    FaRulerVertical,
-    FaGlobe,
-    FaTag,
-    FaImage,
-    FaInfoCircle,
-    FaStar,
-    FaCloudUploadAlt,
-    FaCheckCircle, // New icon for Status field
-} from 'react-icons/fa';
+import { FaBookMedical, FaBook, FaUserEdit, FaDollarSign, FaCalendarAlt, FaRulerVertical, FaGlobe, FaTag, FaImage, FaInfoCircle, FaStar, FaCloudUploadAlt, FaCheckCircle} from 'react-icons/fa';
+import { useForm } from 'react-hook-form';
+import { imageUpload } from "../../../Utiles/index.js"
+import useAuth from '../../../Hooks/useAuth';
 
-// Framer Motion Variants for a gentle staggered appearance
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,13 +25,48 @@ const itemVariants = {
 };
 
 const AddBook = () => {
-    // Placeholder function for form submission (replace with your actual handler)
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted');
-    };
+    const {user} = useAuth();
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm();
 
-    // Tailwind Color Customization: Using #ff0077 for accents
+
+    const onSubmit = async (data) => {
+        const {authorName, bookTitle, category, description, isbn, language, page, photo, price, publicationDate, rating, status} = data;
+        const imageFile = photo[0];
+        const uploadResponse = await imageUpload(imageFile);
+        const finalPhotoUrl = uploadResponse?.data?.display_url;
+    
+       
+        if (!finalPhotoUrl) {
+            console.error("Image upload succeeded, but URL was not found in the response.");
+            return; 
+        }
+        const bookData = {
+            photo: finalPhotoUrl,
+            authorName, 
+            bookTitle, 
+            category, 
+            description, 
+            isbn,  
+            language, 
+            page: Number(page), 
+            price: Number(price), 
+            publicationDate, 
+            rating: Number(rating), 
+            status,
+            seller_libarien: {
+                image: user?.photoURL,
+                name: user?.displayName,
+                email: user?.email,
+            }
+        };
+    
+        console.table(bookData);
+    }
+
     const accentColor = '#ff0077'; 
 
     return (
@@ -60,7 +83,6 @@ const AddBook = () => {
                     variants={itemVariants}
                 >
                     <h1 className="text-5xl font-extrabold text-gray-900 flex items-center justify-center">
-                        {/* ICON COLOR: ff0077 */}
                         <FaBookMedical className="mr-3" style={{ color: accentColor }} />
                         Add New Book to Library
                     </h1>
@@ -71,14 +93,12 @@ const AddBook = () => {
 
                 {/* Main Form Container */}
                 <motion.form
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit(onSubmit)}
                     className="bg-white p-6 sm:p-10 rounded-xl shadow-2xl border border-gray-100"
                     variants={containerVariants}
                 >
                     {/* --- Grid Layout: Two Columns on Large Screens --- */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        
-                        {/* === Column 1: Core Details (Left) === */}
                         <div className="space-y-6">
                             
                             {/* Book Title */}
@@ -88,11 +108,12 @@ const AddBook = () => {
                                 </label>
                                 <input
                                     type="text"
+                                     {...register("bookTitle", { required: true })}
                                     placeholder="The Secret Garden"
-                                    // FOCUS RING COLOR: ff0077
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
                                     style={{ '--tw-ring-color': accentColor }} 
                                 />
+                                 {errors.bookTitle?.type === "required" && (<span className="text-red-500">Title is required</span>)}
                             </motion.div>
 
                             {/* Author Name */}
@@ -103,9 +124,11 @@ const AddBook = () => {
                                 <input
                                     type="text"
                                     placeholder="Frances Hodgson Burnett"
+                                     {...register("authorName", { required: true })}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
                                     style={{ '--tw-ring-color': accentColor }} 
                                 />
+                                 {errors.authorName?.type === "required" && (<span className="text-red-500">Name is required</span>)}
                             </motion.div>
 
                             {/* Category/Genre */}
@@ -114,6 +137,7 @@ const AddBook = () => {
                                     <FaTag className="mr-2" style={{ color: accentColor }} /> Category/Genre
                                 </label>
                                 <select
+                                    {...register("category", { required: true })}
                                     className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-4 focus:border-transparent transition duration-150"
                                     style={{ '--tw-ring-color': accentColor }} 
                                 >
@@ -123,20 +147,20 @@ const AddBook = () => {
                                     <option value="children">Children's Literature</option>
                                     <option value="mystery">Mystery</option>
                                 </select>
+                                 {errors.category?.type === "required" && (<span className="text-red-500">Category is required</span>)}
                             </motion.div>
                             
-                            {/* NEW FIELD: Status */}
+                            {/* Book Status */}
                             <motion.div variants={itemVariants}>
                                 <label className="block text-sm font-medium text-gray-700 flex items-center mb-1">
                                     <FaCheckCircle className="mr-2" style={{ color: accentColor }} /> Status
                                 </label>
-                                <select
-                                    className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-4 focus:border-transparent transition duration-150"
-                                    style={{ '--tw-ring-color': accentColor }} 
-                                >
-                                    <option value="published">Published</option>
-                                    <option value="unpublished">Unpublished</option>
-                                </select>
+                                   <select {...register("status", { required: true })}>
+                                       <option value="">Choose Status</option> 
+                                       <option value="published">Published</option>
+                                       <option value="unpublished">Unpublished</option>
+                                   </select>
+                                {errors.status?.type === "required" && (<span className="text-red-500">Status must be required. Please select one</span>)}
                             </motion.div>
                             
                             {/* Book Image Upload */}
@@ -145,14 +169,16 @@ const AddBook = () => {
                                     <FaImage className="mr-2" style={{ color: accentColor }} /> Book Cover Image
                                 </label>
                                 <input
+                                     {...register("photo", { required: true })}
                                     type="file"
                                     className="file-input file-input-bordered file-input-md w-full bg-white transition duration-150"
                                 />
+                                {errors.photo?.type === "required" && (<span className="text-red-500">Cover Photo is required</span>)}
                             </motion.div>
                             
                         </div>
 
-                        {/* === Column 2: Additional Details (Right) === */}
+                        {/* Column 2 */}
                         <div className="space-y-6">
                             
                             {/* Price and Pages (Inline Grid) */}
@@ -162,18 +188,23 @@ const AddBook = () => {
                                         <FaDollarSign className="mr-2" style={{ color: accentColor }} /> Price ($)
                                     </label>
                                     <input
+                                     {...register("price", { required: true })}
                                         type="number"
                                         placeholder="15.99"
                                         step="0.01"
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
                                         style={{ '--tw-ring-color': accentColor }} 
                                     />
+                                    {errors.price?.type === "required" && (<span className="text-red-500">Add price</span>)}
                                 </motion.div>
+
+                                {/* pages  */}
                                 <motion.div variants={itemVariants}>
                                     <label className="block text-sm font-medium text-gray-700 flex items-center mb-1">
                                         <FaRulerVertical className="mr-2" style={{ color: accentColor }} /> Pages
                                     </label>
                                     <input
+                                         {...register("page")}
                                         type="number"
                                         placeholder="440"
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
@@ -188,31 +219,38 @@ const AddBook = () => {
                                     <FaBook className="mr-2" style={{ color: accentColor }} /> ISBN (International Standard Book Number)
                                 </label>
                                 <input
+                                 {...register("isbn", { required: true })}
                                     type="text"
                                     placeholder="978-0143105747"
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
                                     style={{ '--tw-ring-color': accentColor }} 
                                 />
+                                {errors.isbn?.type === "required" && (<span className="text-red-500">Add ISBN</span>)}
                             </motion.div>
 
-                            {/* Language and Publication Date (Inline Grid) */}
+                            {/* Language and Publication Date */}
                             <div className="grid grid-cols-2 gap-4">
                                 <motion.div variants={itemVariants}>
                                     <label className="block text-sm font-medium text-gray-700 flex items-center mb-1">
                                         <FaGlobe className="mr-2" style={{ color: accentColor }} /> Language
                                     </label>
                                     <input
+                                    {...register("language", { required: true })}
                                         type="text"
                                         placeholder="English"
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
                                         style={{ '--tw-ring-color': accentColor }} 
                                     />
+                                    {errors.language?.type === "required" && (<span className="text-red-500">Language require</span>)}
                                 </motion.div>
+
+                                {/* publication date  */}
                                 <motion.div variants={itemVariants}>
                                     <label className="block text-sm font-medium text-gray-700 flex items-center mb-1">
                                         <FaCalendarAlt className="mr-2" style={{ color: accentColor }} /> Pub. Date
                                     </label>
                                     <input
+                                        {...register("publicationDate")}
                                         type="date"
                                         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-4 focus:border-transparent transition duration-150"
                                         style={{ '--tw-ring-color': accentColor }} 
@@ -226,6 +264,7 @@ const AddBook = () => {
                                     <FaStar className="mr-2" style={{ color: accentColor }} /> Rating (1.0 to 5.0)
                                 </label>
                                 <input
+                                {...register("rating", { required: true })}
                                     type="number"
                                     placeholder="4.5"
                                     step="0.1"
@@ -234,6 +273,7 @@ const AddBook = () => {
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150"
                                     style={{ '--tw-ring-color': accentColor }} 
                                 />
+                                  {errors.rating?.type === "required" && (<span className="text-red-500">Publication date require</span>)}
                             </motion.div>
                             
                             {/* Book Description */}
@@ -242,8 +282,9 @@ const AddBook = () => {
                                     <FaInfoCircle className="mr-2" style={{ color: accentColor }} /> Book Synopsis/Description
                                 </label>
                                 <textarea
+                                  {...register("description")}
                                     placeholder="A brief summary of the book..."
-                                    rows="3" // Reduced rows for a tighter fit
+                                    rows="3" 
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-4 focus:border-transparent transition duration-150 resize-none"
                                     style={{ '--tw-ring-color': accentColor }} 
                                 />
@@ -252,18 +293,17 @@ const AddBook = () => {
                         </div>
                     </div>
 
-                    {/* --- Submit Button (Full Width, Animated) --- */}
+                    {/* From Submit Button */}
                     <motion.div variants={itemVariants} className="mt-10">
                         <button
                             type="submit"
                             className="w-full flex items-center justify-center py-4 px-6 rounded-xl text-lg font-bold text-white 
                                        transition duration-300 shadow-lg hover:shadow-xl focus:ring-4 focus:ring-offset-2 focus:ring-offset-gray-50 
-                                       transform hover:scale-[1.01] active:scale-[0.99]"
-                            // BACKGROUND COLOR: ff0077
+                                       transform hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                             style={{ backgroundColor: accentColor, '--tw-ring-color': accentColor }}
                         >
                             <FaCloudUploadAlt className="mr-3 text-2xl" />
-                            Add Book to Database
+                            Add Book
                         </button>
                     </motion.div>
 
