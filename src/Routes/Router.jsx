@@ -14,6 +14,13 @@ import MyProfile from "../Pages/Dashboard/MyOrders/MyProfile/MyProfile";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import BookDetails from "../Pages/BookDetails/BookDetails";
 import AddBook from "../Pages/Dashboard/AddBook/AddBook";
+import AllBook from "../Pages/AllBook/AllBook";
+import MyBooks from "../Pages/Dashboard/MyBook/MyBooks";
+import Orders from "../Pages/Dashboard/Orders/Orders";
+import AllUsers from "../Pages/Dashboard/AllUsers/AllUsers";
+import ManageBooks from "../Pages/Dashboard/ManageBooks/ManageBooks";
+import Invoices from "../Pages/Dashboard/Invoices/invoices";
+import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
 
 export const router = createBrowserRouter([
   {
@@ -30,12 +37,20 @@ export const router = createBrowserRouter([
         Component: AboutUs,
       },
       {
+        path: "all-books",
+        Component: AllBook,
+      },
+      {
         path: "/book/:id",
         Component: BookDetails,
       },
       {
         path: "rider",
-        element: <PrivateRoute><Rider></Rider></PrivateRoute>
+        element: (
+          <PrivateRoute>
+            <Rider></Rider>
+          </PrivateRoute>
+        ),
       },
     ],
   },
@@ -55,21 +70,49 @@ export const router = createBrowserRouter([
   },
 
   {
-    path:"dashboard",
-    element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+    path: "dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout></DashboardLayout>
+      </PrivateRoute>
+    ),
     children: [
       {
-        path:"my-orders",
+        path: "my-orders",
         Component: MyOrders,
       },
       {
-        path:"my-profile",
+        path: "my-profile",
         Component: MyProfile,
       },
       {
-        path:"add-book",
+        path: "my-books",
+        Component: MyBooks,
+      },
+      {
+        path: "add-book",
         Component: AddBook,
-      }
-    ]
-  }
+      },
+      {
+        path: "all-orders",
+        Component: Orders,
+      },
+      {
+        path: "all-users",
+        Component: AllUsers,
+      },
+      {
+        path: "manage-books",
+        Component: ManageBooks,
+      },
+      {
+        path: "invoices",
+        Component: Invoices,
+      },
+      {
+        path: "my-wishlist",
+        Component: MyWishlist,
+      },
+    ],
+  },
 ]);

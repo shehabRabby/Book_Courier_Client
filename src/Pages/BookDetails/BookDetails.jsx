@@ -38,8 +38,8 @@ const BookDetails = () => {
     
     // Derived user info
     const currentUser = {
-        name: user?.displayName || "John Doe",
-        email: user?.email || "john.doe@example.com",
+        name: user?.displayName || "Your Name",
+        email: user?.email || "name@example.com",
     };
 
     return (

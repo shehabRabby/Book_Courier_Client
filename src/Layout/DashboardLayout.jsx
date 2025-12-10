@@ -6,18 +6,20 @@ import useAuth from '../Hooks/useAuth';
 
 // --- 1. Complete List of All Dashboard Links ---
 const allDashboardLinks = [
-    // ... (links array remains the same)
+    // Users
+    { name: "My Profile", path: "/dashboard/my-profile", icon: "fas fa-user-circle" },
     { name: "My Orders", path: "/dashboard/my-orders", icon: "fas fa-box-open" },
     { name: "Invoices", path: "/dashboard/invoices", icon: "fas fa-file-invoice-dollar" },
-    { name: "My Profile", path: "/dashboard/my-profile", icon: "fas fa-user-circle" },
     { name: "My Wishlist", path: "/dashboard/my-wishlist", icon: "fas fa-heart" }, 
     
+    // Librarian
     { name: "Add Book", path: "/dashboard/add-book", icon: "fas fa-book-medical" },
     { name: "My Books", path: "/dashboard/my-books", icon: "fas fa-book" },
-    { name: "Orders (Librarian)", path: "/dashboard/librarian-orders", icon: "fas fa-truck-loading" },
-    
-    { name: "All Users", path: "/dashboard/all-users", icon: "fas fa-users-cog" },
+    { name: "Orders (Librarian)", path: "/dashboard/all-orders", icon: "fas fa-truck-loading" },
     { name: "Manage Books", path: "/dashboard/manage-books", icon: "fas fa-book-reader" },
+
+    // Admin 
+    { name: "All Users", path: "/dashboard/all-users", icon: "fas fa-users-cog" },
 ];
 
 const DashboardLayout = () => {
