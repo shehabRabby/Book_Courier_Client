@@ -1,162 +1,196 @@
 import React, { useState } from "react";
 import {
-    FaShoppingCart,
-    FaBook,
-    FaUserEdit,
-    FaDollarSign,
-    FaStar,
-    FaRulerVertical,
-    FaGlobe,
-    FaCheckCircle,
-    FaInfoCircle,
-    FaTag,
+    FaShoppingCart, FaBook, FaUserEdit, FaDollarSign, FaStar, 
+    FaRulerVertical, FaGlobe, FaCheckCircle, FaInfoCircle, 
+    FaTag, FaCalendarAlt,
 } from "react-icons/fa";
-// The image import needs to be adjusted based on the actual path:
-import bookImg from "../../assets/toplibrary1.png";
-import useAuth from "../../Hooks/useAuth";
-import OrderNowModal from './OrderNowModal'; // Import the new modal component
 
-// --- Dummy Book Data ---
-const dummyBook = {
-    name: "The Secret Garden",
-    image: bookImg,
-    author: "Frances Hodgson Burnett",
-    status: "published",
-    price: 15.99,
-    rating: 4.5,
-    pages: 440,
-    language: "English",
-    isbn: "978-0143105747",
-    genre: "Classic Children's Literature",
-    description:
-        "A classic children's novel about the solitary orphan Mary Lennox who is sent to live in her uncle's imposing manor on the Yorkshire moors, where she discovers a secret, neglected garden and begins to heal herself and her family.",
-};
+import useAuth from "../../Hooks/useAuth";
+import OrderNowModal from "./OrderNowModal"; 
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import Loading from "../../Components/Logo/Loading/Loading";
+
+
+
+const accentColor = '#ff0077'; 
+const DetailFactCard = ({ icon: Icon, title, value, bgColor, borderColor, valueColor, delay }) => (
+    <div 
+        className={`p-3 sm:p-4 ${bgColor} rounded-xl shadow-lg border-b-4 ${borderColor} 
+                    transition duration-300 hover:shadow-xl hover:scale-[1.02] 
+                    animate-fadeInUp`}
+        style={{ animationDelay: `${delay}ms` }}
+    >
+        <Icon className={`text-2xl ${valueColor} mx-auto mb-1`} />
+        <p className="text-xs text-gray-500 uppercase font-semibold">
+            {title}
+        </p>
+        <p className={`font-bold text-xl ${valueColor} capitalize truncate`} title={value}>
+            {value}
+        </p>
+    </div>
+);
+
 
 const BookDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { user } = useAuth();
-    
+    const { id } = useParams();
+
+    const { data: book = {}, isLoading, isError, refetch,
+    } = useQuery({
+        queryKey: ["book", id],
+        queryFn: async () => {
+            const result = await axios(`${import.meta.env.VITE_API_URL}/books/${id}`);
+            return result.data;
+        },
+    });
+
+    const { _id, authorName, bookTitle, category, description, isbn, language, page, photo, price, publicationDate, rating, status,
+    } = book;
+
     // Derived user info
     const currentUser = {
         name: user?.displayName || "Your Name",
         email: user?.email || "name@example.com",
     };
 
+    // book info loading 
+    if(isLoading) return <Loading></Loading>
+    if(isError) return <h1 className="text-center text-red-600 text-3xl pt-20">Book details not found</h1>
+
     return (
-        <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-5xl font-extrabold text-gray-800 text-center mb-10">
-                Book Details
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+
+            <h1 className="text-5xl font-extrabold text-gray-900 text-center mb-12 animate-fadeInDown">
+                Book Overview
             </h1>
 
-            {/* --- Main Book Detail Card --- */}
-            <div className="max-w-7xl mx-auto bg-white shadow-2xl rounded-2xl p-6 lg:p-12 animate-fadeInUp">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            {/* Book Detail Card */}
+            <div 
+                className="max-w-7xl mx-auto bg-white shadow-3xl rounded-3xl p-6 lg:p-12 
+                           border border-gray-100"
+                style={{ animationDelay: '100ms' }}
+            >
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     
-                    {/* Column 1: Book Cover and Order Button */}
+                    {/* Column 1: Book Cover and Call to Action */}
                     <div className="lg:col-span-1 flex flex-col items-center">
                         <img
-                            // Using dummyBook.image for a complete setup, replace with bookImg if preferred
-                            src={dummyBook.image} 
-                            alt={dummyBook.name}
-                            className="w-full max-w-xs h-auto rounded-xl shadow-xl border-4 border-[#ff0077]/50 transform transition duration-500 hover:scale-[1.03] hover:shadow-3xl"
+                            src={photo}
+                            alt={bookTitle}
+                            className="w-full max-w-xs h-auto rounded-xl shadow-2xl border-4 border-gray-100 
+                                       transform transition duration-500 hover:scale-[1.03] hover:shadow-3xl"
                         />
                         <div className="mt-8 w-full max-w-xs">
-                            <div className="text-center mb-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
-                                <p className="text-sm text-indigo-700 font-medium animate-pulse-slow">
-                                    Limited Stock Available!
+                            
+                            {/* Price Box */}
+                            <div className="text-center mb-6 p-4 bg-gray-100 rounded-xl border border-gray-200">
+                                <p className="text-sm text-gray-600 font-medium mb-1">
+                                    Book Price
+                                </p>
+                                <p className="text-5xl font-black text-gray-900">
+                                    <span className="text-2xl align-top text-gray-600">$</span>{price}
                                 </p>
                             </div>
-                            <p className="text-4xl font-extrabold text-[#ff0077] text-center mb-4">
-                                ${dummyBook.price.toFixed(2)}
-                            </p>
 
+                            {/* Order Button (Using accent color: #ff0077) */}
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="w-full flex items-center justify-center py-3 px-4 rounded-xl shadow-lg text-lg font-semibold text-white transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-offset-2 focus:ring-indigo-500/50 transform hover:scale-[1.01]"
+                                className="w-full flex items-center justify-center py-4 px-6 rounded-xl shadow-xl text-xl font-bold text-white transition-all duration-300 
+                                           focus:ring-4 focus:ring-offset-2 focus:ring-opacity-70 transform hover:scale-[1.01] active:scale-[0.99]"
+                                style={{ backgroundColor: accentColor, '--tw-ring-color': accentColor }}
                             >
-                                <FaShoppingCart className="mr-2" /> Order Now
+                                <FaShoppingCart className="mr-3" /> Order Now
                             </button>
+                            
+                            {/* Stock Message */}
+                            <div className="text-center mt-4 p-2 bg-yellow-50 rounded-lg text-sm text-yellow-800 font-semibold border-l-4 border-yellow-400 animate-pulse-slow">
+                                Limited Stock Available!
+                            </div>
                         </div>
                     </div>
 
                     {/* Column 2 & 3: Details and Description */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="lg:col-span-2 space-y-10">
                         
-                        {/* Title and Author Header */}
-                        <header className="border-b pb-4 border-gray-200">
-                            <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-                                {dummyBook.name}
+                        {/* Title & Author Header */}
+                        <header className="border-b pb-4 border-gray-100 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
+                            <h2 className="text-5xl font-black text-gray-900 leading-snug">
+                                {bookTitle}
                             </h2>
-                            <p className="text-xl text-indigo-600 font-medium mt-1 flex items-center">
-                                <FaUserEdit className="mr-2 text-[#ff0077]" /> Author: {dummyBook.author}
+                            <p className="text-2xl text-gray-600 font-semibold mt-2 flex items-center">
+                                <FaUserEdit className="mr-2" style={{ color: accentColor }} /> 
+                                <span className="text-gray-700">by</span> {authorName}
                             </p>
                         </header>
 
-                        {/* Key Info Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                            
-                            {/* Price */}
-                            <div className="p-3 bg-yellow-50 rounded-lg shadow-md border-b-4 border-yellow-500">
-                                <FaDollarSign className="text-2xl text-yellow-600 mx-auto mb-1" />
-                                <p className="text-xs text-gray-500 uppercase font-semibold">Price</p>
-                                <p className="font-bold text-xl text-yellow-800">${dummyBook.price.toFixed(2)}</p>
-                            </div>
-
-                            {/* Status */}
-                            <div className="p-3 bg-green-50 rounded-lg shadow-md border-b-4 border-green-500">
-                                <FaCheckCircle className="text-2xl text-green-600 mx-auto mb-1" />
-                                <p className="text-xs text-gray-500 uppercase font-semibold">Status</p>
-                                <p className="font-bold text-xl text-green-800 capitalize">{dummyBook.status}</p>
-                            </div>
-                            
-                            {/* Genre */}
-                            <div className="p-3 bg-purple-50 rounded-lg shadow-md border-b-4 border-purple-500">
-                                <FaTag className="text-2xl text-purple-600 mx-auto mb-1" />
-                                <p className="text-xs text-gray-500 uppercase font-semibold">Genre</p>
-                                <p className="font-bold text-xl text-purple-800 capitalize truncate">{dummyBook.genre}</p>
-                            </div>
-
-                            {/* Rating */}
-                            <div className="p-3 bg-blue-50 rounded-lg shadow-md border-b-4 border-blue-500">
-                                <FaStar className="text-2xl text-blue-600 mx-auto mb-1" />
-                                <p className="text-xs text-gray-500 uppercase font-semibold">Rating</p>
-                                <p className="font-bold text-xl text-blue-800">
-                                    {dummyBook.rating} / 5
-                                </p>
-                            </div>
+                        {/* 4 Key Facts Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <DetailFactCard 
+                                icon={FaStar} title="Rating" value={`${rating} / 5`} 
+                                bgColor="bg-blue-50" borderColor="border-blue-500" valueColor="text-blue-800" delay={300}
+                            />
+                            <DetailFactCard 
+                                icon={FaCheckCircle} title="Status" value={status} 
+                                bgColor="bg-green-50" borderColor="border-green-500" valueColor="text-green-800" delay={350}
+                            />
+                            <DetailFactCard 
+                                icon={FaTag} title="Genre" value={category} 
+                                bgColor="bg-purple-50" borderColor="border-purple-500" valueColor="text-purple-800" delay={400}
+                            />
+                             <DetailFactCard 
+                                icon={FaRulerVertical} title="Pages" value={page} 
+                                bgColor="bg-orange-50" borderColor="border-orange-500" valueColor="text-orange-800" delay={450}
+                            />
                         </div>
 
-                        {/* Book Description */}
-                        <div>
-                            <h3 className="text-2xl font-semibold text-gray-800 border-b pb-2 mb-3 border-gray-200 flex items-center">
-                                <FaInfoCircle className="mr-2 text-indigo-600" /> Synopsis
+                        {/* Book Description / Synopsis */}
+                        <div className="animate-fadeInUp" style={{ animationDelay: '500ms' }}>
+                            <h3 className="text-3xl font-bold text-gray-800 border-b-2 pb-2 mb-4 border-gray-100 flex items-center">
+                                <FaInfoCircle className="mr-2 text-gray-500" /> Description
                             </h3>
-                            <p className="text-gray-700 leading-relaxed text-lg">
-                                {dummyBook.description}
+                            <p className="text-gray-700 leading-relaxed text-lg bg-gray-50 p-4 rounded-xl shadow-inner border border-gray-100">
+                                {description}
                             </p>
                         </div>
 
-                        {/* Additional Details */}
-                        <div className="grid grid-cols-2 gap-4 text-gray-600 text-base border-t pt-4 border-gray-100">
-                            <p className="flex items-center font-medium"><FaRulerVertical className="mr-2 text-indigo-500" /> Pages: {dummyBook.pages}</p>
-                            <p className="flex items-center font-medium"><FaGlobe className="mr-2 text-indigo-500" /> Language: {dummyBook.language}</p>
-                            <p className="flex items-center font-medium"><FaBook className="mr-2 text-indigo-500" /> ISBN: {dummyBook.isbn}</p>
+                        {/* Additional Metadata Panel (Publication Details) */}
+                        <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-md animate-fadeInUp" style={{ animationDelay: '600ms' }}>
+                            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                                <FaBook className="mr-2" style={{ color: accentColor }} /> Key Publication Details
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-600">
+                                <p className="flex items-center font-medium p-3 bg-red-50 rounded-lg shadow-sm">
+                                    <FaCalendarAlt className="mr-3 text-red-600" /> 
+                                    <span className="font-semibold text-gray-700">Published:</span> {publicationDate}
+                                </p>
+                                
+                                <p className="flex items-center font-medium p-3 bg-gray-50 rounded-lg shadow-sm">
+                                    <FaBook className="mr-3 text-blue-500" /> 
+                                    <span className="font-semibold text-gray-700">ISBN:</span> {isbn}
+                                </p>
+                                <p className="flex items-center font-medium p-3 bg-gray-50 rounded-lg shadow-sm">
+                                    <FaGlobe className="mr-3 text-green-500" /> 
+                                    <span className="font-semibold text-gray-700">Language:</span> {language}
+                                </p>
+                            </div>
                         </div>
 
                     </div>
                 </div>
             </div>
-            {/* --- End Main Card --- */}
 
-            {/* --- External Order Modal Component --- */}
-            <OrderNowModal 
+            {/* --- Order Modal--- */}
+            <OrderNowModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 currentUser={currentUser}
-                bookPrice={dummyBook.price}
+                bookPrice={price}
             />
 
-            {/* Optional: Add basic keyframe CSS for the animation */}
+            {/* Global Animation Styles */}
             <style jsx global>{`
                 @keyframes fadeInDown {
                     from { opacity: 0; transform: translateY(-20px); }
@@ -165,15 +199,19 @@ const BookDetails = () => {
                 .animate-fadeInDown {
                     animation: fadeInDown 0.3s ease-out;
                 }
-                
+
                 @keyframes fadeInUp {
                     from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
                 .animate-fadeInUp {
-                    animation: fadeInUp 0.5s ease-out;
+                    animation: fadeInUp 0.5s ease-out both; /* Added 'both' to keep the final state */
                 }
-                
+                /* Staggered Animations */
+                .animate-fadeInUp[style*="animation-delay"] {
+                    opacity: 0; /* Hide elements initially for staggered effect */
+                }
+
                 @keyframes pulse-slow {
                     0%, 100% { opacity: 1; }
                     50% { opacity: 0.5; }
@@ -182,7 +220,6 @@ const BookDetails = () => {
                     animation: pulse-slow 4s infinite;
                 }
             `}</style>
-
         </div>
     );
 };
