@@ -21,6 +21,7 @@ import AllUsers from "../Pages/Dashboard/AllUsers/AllUsers";
 import ManageBooks from "../Pages/Dashboard/ManageBooks/ManageBooks";
 import Invoices from "../Pages/Dashboard/Invoices/invoices";
 import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
+import PaymentPage from "../Pages/Payment/PaymentPage";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,14 @@ export const router = createBrowserRouter([
       {
         path: "/book/:id",
         Component: BookDetails,
+      },
+      {
+        path: "/payment/:orderId",
+        element: (
+          <PrivateRoute>
+            <PaymentPage></PaymentPage>
+          </PrivateRoute>
+        ),
       },
       {
         path: "rider",

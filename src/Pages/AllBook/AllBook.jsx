@@ -70,7 +70,7 @@ const AllBook = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 1. Animation Section */}
-      <AllBookAnimation />{" "}
+      {/* <AllBookAnimation></AllBookAnimation> */}
       <section className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           {" "}
