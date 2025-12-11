@@ -7,18 +7,23 @@ import Loading from "../../../Components/Logo/Loading/Loading";
 import { Link } from "react-router";
 
 const LatestBook = () => {
-  const { data: LatestBooks =[], isLoading, isError } = useQuery({
-    queryKey: ["books"],
+  const {
+    data: LatestBooks = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["latestBooks"],
     queryFn: async () => {
-      const result = await axios(`${import.meta.env.VITE_API_URL}/books`);
+      const result = await axios(
+        `${import.meta.env.VITE_API_URL}/latest-books`
+      );
       return result.data;
     },
   });
 
-
-    //loading spinner for data fetch
-    if(isError) return <h1>Data fetch error.......</h1>
-    if(isLoading) return <Loading></Loading>
+  //loading spinner for data fetch
+  if (isError) return <h1>Data fetch error.......</h1>;
+  if (isLoading) return <Loading></Loading>;
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 border-t border-b border-gray-200">
@@ -41,16 +46,16 @@ const LatestBook = () => {
       <div className=" grid  gap-8  sm:grid-cols-2  md:grid-cols-3  lg:grid-cols-4  xl:grid-cols-5  2xl:grid-cols-5  mx-auto">
         {/* Map over the dummy data to render 8 cards */}
         {LatestBooks.map((book) => (
-          <LatestBookCard
-            key={book._id}
-           book={book}
-          />
+          <LatestBookCard key={book._id} book={book} />
         ))}
       </div>
 
       {/* --- Go All Book Section --- */}
       <div className="mt-12 text-center">
-        <Link to='/all-books' className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-secondary hover:bg-secondary transition duration-300 transform hover:scale-105">
+        <Link
+          to="/all-books"
+          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-secondary hover:bg-secondary transition duration-300 transform hover:scale-105"
+        >
           See All Books
         </Link>
       </div>
