@@ -63,7 +63,7 @@ const MyWishlist = () => {
               <div key={item._id} className="bg-base-100 rounded-2xl shadow-xl overflow-hidden border border-base-300 flex flex-col group transition-all hover:shadow-2xl">
                 
                 {/* Image Container */}
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-50 overflow-hidden">
                   <img 
                     src={item.photo} 
                     alt={item.bookTitle} 

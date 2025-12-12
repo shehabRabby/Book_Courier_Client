@@ -5,9 +5,10 @@ import {
   FaCheckCircle,
   FaMapMarkedAlt,
   FaPhoneAlt,
+  FaSpinner
 } from "react-icons/fa";
 import axios from "axios";
-import toast from "react-hot-toast"; // Assuming you use react-hot-toast or similar
+import toast from "react-hot-toast";
 
 const OrderNowModal = ({
   isOpen,
@@ -17,32 +18,36 @@ const OrderNowModal = ({
   bookId,
   bookTitle,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderForm, setOrderForm] = useState({
     phone: "",
     address: "",
   });
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   const handleOrder = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     if (!bookId || !bookTitle) {
-      toast.error("Book data is missing for order.");
+      toast.error("Asset synchronization error: Book data missing.");
+      setIsSubmitting(false);
       return;
     }
 
     const orderData = {
-      bookId: bookId,
-      bookTitle: bookTitle,
+      bookId,
+      bookTitle,
       name: currentUser.name,
       email: currentUser.email,
       phone: orderForm.phone,
       address: orderForm.address,
       price: bookPrice,
       quantity: 1,
+      status: "pending",
+      paymentStatus: "unpaid",
+      orderedAt: new Date(),
     };
 
     try {
@@ -52,127 +57,134 @@ const OrderNowModal = ({
       );
 
       if (response.data.insertedId) {
-        toast.success(
-          "Order Placed Successfully! Status: pending, Payment: unpaid."
-        );
-
-        // Reset form and close modal
+        toast.success("Order Logged. Status: PENDING / UNPAID");
         setOrderForm({ phone: "", address: "" });
         onClose();
-      } else {
-        toast.error("Failed to place order.");
       }
     } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("An error occurred. Please try again.");
+      console.error("Order Transmission Error:", error);
+      toast.error("System timeout. Please verify connectivity.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    // Modal Backdrop
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-      {/* Modal Content */}
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 animate-fadeInDown">
-        {/* Modal Header */}
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 className="text-2xl font-bold text-gray-800 flex items-center">
-            <FaShoppingCart className="mr-2 text-[#ff0077]" /> Place Your Order
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
-          >
-            <FaRegWindowClose className="text-2xl" />
-          </button>
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Glassmorphism Backdrop */}
+      <div 
+        className="absolute inset-0 bg-base-300/60 backdrop-blur-sm"
+        onClick={!isSubmitting ? onClose : null}
+      />
 
-        {/* Book Info */}
-        <div className="text-center mb-4 p-3 bg-indigo-50 rounded-lg">
-          <p className="text-xl font-semibold text-indigo-700">{bookTitle}</p>
-          <p className="text-2xl font-bold text-[#ff0077]">${bookPrice}</p>
-        </div>
+      {/* Terminal Content */}
+      <div className="relative bg-base-100 border border-base-300 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-terminalPop">
+        
+        {/* Header Accent Line */}
+        <div className="h-1.5 w-full bg-[#ff0077]" />
 
-        {/* Modal Form */}
-        <form onSubmit={handleOrder} className="space-y-4">
-          {/* Name (Readonly) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Name
-            </label>
-            <input
-              type="text"
-              value={currentUser.name}
-              readOnly
-              className="mt-1 block w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 cursor-not-allowed"
-            />
-          </div>
-
-          {/* Email (Readonly) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              value={currentUser.email}
-              readOnly
-              className="mt-1 block w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 cursor-not-allowed"
-            />
-          </div>
-
-          {/* Phone Number */}
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700 flex items-center"
+        <div className="p-8">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h3 className="text-2xl font-black text-base-content flex items-center gap-3">
+                <FaShoppingCart className="text-[#ff0077]" /> 
+                Secure Checkout
+              </h3>
+              <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest mt-1">
+                Transaction ID: TXN-{Math.random().toString(36).substr(2, 9).toUpperCase()}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="btn btn-circle btn-ghost btn-sm opacity-40 hover:opacity-100"
             >
-              <FaPhoneAlt className="mr-1 text-sm text-indigo-500" /> Phone
-              Number
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              value={orderForm.phone}
-              onChange={(e) =>
-                setOrderForm({ ...orderForm, phone: e.target.value })
-              }
-              required
-              className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm px-3 py-2 focus:ring-[#ff0077] focus:border-[#ff0077]"
-              placeholder="e.g., +8801XXXXXXXXX"
-            />
+              <FaRegWindowClose className="text-xl" />
+            </button>
           </div>
 
-          {/* Address */}
-          <div>
-            <label
-              htmlFor="address"
-              className="block text-sm font-medium text-gray-700 flex items-center"
+          {/* Book Summary Card */}
+          <div className="mb-8 p-6 bg-base-200 rounded-2xl border border-base-300 flex justify-between items-center">
+            <div className="max-w-[70%]">
+              <p className="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-1">Selected Asset</p>
+              <p className="font-bold text-base-content truncate">{bookTitle}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-1">Total Due</p>
+              <p className="text-2xl font-black text-[#ff0077]">${bookPrice}</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleOrder} className="space-y-5">
+            {/* Read-Only User Context */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="opacity-60 pointer-events-none">
+                <label className="text-[10px] font-black uppercase tracking-widest mb-2 block">Purchaser</label>
+                <input type="text" value={currentUser.name} className="w-full bg-base-200 border-none rounded-xl text-xs py-3 px-4 font-bold" readOnly />
+              </div>
+              <div className="opacity-60 pointer-events-none">
+                <label className="text-[10px] font-black uppercase tracking-widest mb-2 block">Auth Email</label>
+                <input type="text" value={currentUser.email} className="w-full bg-base-200 border-none rounded-xl text-xs py-3 px-4 font-bold" readOnly />
+              </div>
+            </div>
+
+            {/* Editable Information */}
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                <FaPhoneAlt className="text-[#ff0077] text-[8px]" /> Contact Signal (Phone)
+              </label>
+              <input
+                type="tel"
+                value={orderForm.phone}
+                onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                required
+                placeholder="+8801XXXXXXXXX"
+                className="input input-bordered w-full rounded-xl bg-base-100 focus:border-[#ff0077] transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                <FaMapMarkedAlt className="text-[#ff0077] text-[8px]" /> Deployment Address
+              </label>
+              <textarea
+                value={orderForm.address}
+                onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
+                required
+                rows="3"
+                placeholder="Coordinates / Street Address"
+                className="textarea textarea-bordered w-full rounded-xl bg-base-100 focus:border-[#ff0077] transition-all resize-none"
+              ></textarea>
+            </div>
+
+            {/* Submission Logic */}
+            
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full btn border-none text-white rounded-2xl h-14 text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-pink-500/20 group"
+              style={{ backgroundColor: "#ff0077" }}
             >
-              <FaMapMarkedAlt className="mr-1 text-sm text-indigo-500" />{" "}
-              Delivery Address
-            </label>
-            <textarea
-              id="address"
-              value={orderForm.address}
-              onChange={(e) =>
-                setOrderForm({ ...orderForm, address: e.target.value })
-              }
-              required
-              rows="3"
-              className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm px-3 py-2 focus:ring-[#ff0077] focus:border-[#ff0077]"
-              placeholder="Street, City, Post Code"
-            ></textarea>
-          </div>
-
-          {/* Place Order Button */}
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center py-3 px-4 rounded-xl shadow-md text-lg font-semibold text-white transition-all duration-300 bg-indigo-600 hover:bg-indigo-700"
-          >
-            <FaCheckCircle className="mr-2" /> Place Order
-          </button>
-        </form>
+              {isSubmitting ? (
+                <FaSpinner className="animate-spin text-xl" />
+              ) : (
+                <>
+                  Confirm Transaction
+                  <FaCheckCircle className="ml-2 group-hover:scale-125 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
       </div>
+
+      <style>{`
+        @keyframes terminalPop {
+          from { opacity: 0; transform: scale(0.95) translateY(10px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-terminalPop { animation: terminalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      `}</style>
     </div>
   );
 };

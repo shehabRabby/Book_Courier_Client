@@ -125,7 +125,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "my-wishlist",
-        Component: MyWishlist,
+        element: <PrivateRoute><MyWishlist></MyWishlist></PrivateRoute>
       },
     ],
   },

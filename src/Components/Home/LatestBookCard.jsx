@@ -1,90 +1,98 @@
 import React from "react";
-import { FaBookOpen, FaStar } from "react-icons/fa"; // Added FaStar for potential rating display
+import { FaBookOpen, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom"; 
-import bookImg from "../../assets/toplibrary1.png"; // Assuming you might still use this placeholder
+import bookImg from "../../assets/toplibrary1.png";
 
 const LatestBookCard = ({ book }) => {
-  const {
-    _id,
-    bookTitle,
-    photo,
-    rating,
-    isRatingHighlighted,
-  } = book;
+  const {
+    _id,
+    bookTitle,
+    photo,
+    rating,
+    isRatingHighlighted,
+  } = book;
 
-  // --- Custom Accent Color Mapping for theme toggling (Pink/Primary Color) ---
-  const ACCENT_CLASS = "text-pink-600 dark:text-pink-400";
-  const ACCENT_BG_CLASS = "bg-pink-600 hover:bg-pink-700";
-  const HIGHLIGHT_RING = "ring-pink-500/30";
-  
-  const highlightClasses = isRatingHighlighted
-    // Using theme-aware border and ring classes for highlight
-    ? `border-4 border-dashed ${ACCENT_CLASS.replace('text-', 'border-')} ring-4 ${HIGHLIGHT_RING} shadow-2xl` 
-    // Using theme-aware base border color
-    : "border border-base-300"; 
-  
-  const cardClasses = `
-        // Use bg-base-100 for theme compatibility
-        bg-base-100 rounded-xl shadow-lg overflow-hidden 
-        transform transition duration-300 
-        hover:shadow-2xl hover:scale-[1.03]
-        ${highlightClasses}
-    `;
+  // --- Brand Design Tokens ---
+  const ACCENT_COLOR = "#ff0077"; // Electric Pink
+  
+  // Highlight logic: Creates a premium "Featured" look for top-rated books
+  const highlightStyles = isRatingHighlighted
+    ? {
+        border: `2px solid ${ACCENT_COLOR}`,
+        boxShadow: `0 0 20px -5px ${ACCENT_COLOR}66`,
+      }
+    : {};
 
-  return (
-    <div className={cardClasses}>
-      {/* Book Image Section */}
-      {/* Use bg-base-200 for a subtle theme-aware background */}
-      <div className="h-44 flex items-center justify-center bg-base-200">
-        <img
-          src={photo || bookImg}
-          alt={bookTitle}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      
-      <div className="p-4 text-center">
-        {/* 1. Book Title (Retained) */}
-        {/* Use theme-aware text-base-content */}
-        <h3
-          className="text-lg font-bold text-base-content truncate mb-3"
-          title={bookTitle}
-        >
-          {bookTitle}
-        </h3>
+  return (
+    <div 
+      style={highlightStyles}
+      className={`group relative bg-base-100 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-base-300 ${isRatingHighlighted ? 'ring-1 ring-offset-2 ring-pink-500/20' : ''}`}
+    >
+      {/* Featured Badge for Highlighted Books */}
+      {isRatingHighlighted && (
+        <div className="absolute top-3 right-3 z-20">
+          <span className="badge badge-secondary badge-sm font-bold shadow-md animate-pulse">
+            TOP PICK
+          </span>
+        </div>
+      )}
 
-        {/* 2. Rating Display (Retained) */}
-        <div className="flex justify-center items-center mb-4">
-          {[...Array(5)].map((_, i) => (
-            <FaStar
-              key={i}
-              // Use theme-aware gray color for unrated stars (text-base-content/50)
-              className={`h-4 w-4 ${
-                i < rating ? "text-yellow-400" : "text-base-content opacity-30" 
-              }`}
-            />
-          ))}
-          {/* Use theme-aware text-base-content for the rating number */}
-          <span className="ml-1 text-sm font-medium text-base-content opacity-80">
-            ({rating})
-          </span>
-        </div>
+      {/* --- Image Section --- */}
+      <div className="h-52 relative overflow-hidden bg-base-200">
+        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors z-10" />
+        <img
+          src={photo || bookImg}
+          alt={bookTitle}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+      </div>
+      
+      {/* --- Content Section --- */}
+      <div className="p-5 flex flex-col items-center">
+        
+        {/* Book Title */}
+        <h3
+          className="text-md font-black text-base-content text-center line-clamp-1 mb-2 group-hover:text-[#ff0077] transition-colors"
+          title={bookTitle}
+        >
+          {bookTitle}
+        </h3>
 
-        {/* NOTE: Author Name and Category removed as requested */}
-        
-        {/* 3. See Details Button (Retained) */}
-        {/* Use accent classes for button color matching */}
-        <Link
-          to={`/book/${_id}`}
-          onClick={() => console.log(`Viewing details for: ${bookTitle}`)}
-          className={`w-full flex items-center justify-center ${ACCENT_BG_CLASS} text-white font-medium py-2 px-2 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.02]`}
-        >
-          <FaBookOpen className="mr-2" />
-          See Details
-        </Link>
-      </div>
-    </div>
-  );
+        {/* Rating Display */}
+        <div className="flex justify-center items-center gap-1 mb-6">
+          {[...Array(5)].map((_, i) => (
+            <FaStar
+              key={i}
+              className={`text-xs ${
+                i < rating ? "text-yellow-400" : "text-base-content/20" 
+              }`}
+            />
+          ))}
+          <span className="ml-2 text-[10px] font-black opacity-40 tracking-widest uppercase">
+            {rating}/5
+          </span>
+        </div>
+
+        {/* Action Button */}
+        <Link
+          to={`/book/${_id}`}
+          className="w-full btn btn-sm border-none text-white transition-all duration-300 gap-2 hover:gap-4"
+          style={{ 
+            backgroundColor: ACCENT_COLOR,
+            boxShadow: isRatingHighlighted ? `0 10px 15px -3px ${ACCENT_COLOR}44` : 'none'
+          }}
+        >
+          <FaBookOpen className="text-xs" />
+          <span className="text-[11px] font-bold uppercase tracking-widest">See Details</span>
+        </Link>
+      </div>
+
+      {/* Subtle Bottom Accent Line */}
+      {isRatingHighlighted && (
+        <div className="h-1 w-full absolute bottom-0 bg-gradient-to-r from-transparent via-[#ff0077] to-transparent opacity-50" />
+      )}
+    </div>
+  );
 };
 
 export default LatestBookCard;

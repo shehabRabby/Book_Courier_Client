@@ -1,150 +1,164 @@
-// Register.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import { imageUpload } from "../../../Utiles";
-
+import toast from "react-hot-toast";
+import { FaUser, FaEnvelope, FaLock, FaImage, FaUserPlus } from "react-icons/fa";
 
 const Register = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const { registerUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const accentColor = "#ff0077"; // Brand accent
 
   const handleRegistration = async (data) => {
-    // ⬅️ MAKE IT ASYNC
-    console.log("Before Register : ", data);
+    setLoading(true);
+    const regToast = toast.loading("Creating your account...");
     const profileImage = data.photo[0];
 
     try {
-      // 1. Register the user
+      // 1. Firebase Registration
       const result = await registerUser(data.email, data.password);
-      console.log("After Register Succesfull : ", result.user);
 
-      // 2. Upload the image using the reusable function
-      // The image data is the whole response object from ImgBB
+      // 2. Image Upload to ImgBB
       const imageData = await imageUpload(profileImage);
       const photoURL = imageData.data.display_url;
-      console.log("Image Upload URL ", photoURL);
 
-      // 3. Update user profile
+      // 3. Update Firebase Profile with Name and Photo
       const userProfile = {
         displayName: data.name,
         photoURL: photoURL,
       };
-
       await updateUserProfile(userProfile);
 
-      console.log("User Profile update successfully");
+      toast.success("Account created successfully!", { id: regToast });
       navigate(location.state || "/", { replace: true });
     } catch (error) {
-      // Consolidated error handling for registration or image upload failure
-      console.error("Registration or Profile Update Error: ", error.message);
-      // You might want to show a toast or alert to the user here
+      console.error("Error:", error);
+      toast.error(error.message || "Registration failed.", { id: regToast });
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ... rest of the component (return statement) remains the same
   return (
-    <div class="card w-full max-w-sm shadow-2xl bg-white">
-      <form onSubmit={handleSubmit(handleRegistration)} class="card-body">
-        <h2 class="card-title text-2xl text-center mb-4">Register Now</h2>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200">
+      <div className="w-full max-w-md bg-base-100 shadow-2xl rounded-3xl overflow-hidden border border-base-300">
+        
+        {/* Decorative Top Bar */}
+        <div className="h-2 w-full" style={{ backgroundColor: accentColor }}></div>
 
-        {/* Name field  */}
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Name</span>
-          </label>
-          <input
-            type="text"
-            {...register("name", { required: true })}
-            placeholder="Enter your full name"
-            class="input input-bordered w-full"
-          />
-          {errors.name?.type === "required" && (
-            <span className="text-red-500">Name is required</span>
-          )}
-        </div>
+        <div className="p-8">
+          <header className="text-center mb-8">
+            <h2 className="text-3xl font-black text-base-content flex items-center justify-center gap-3">
+              <FaUserPlus style={{ color: accentColor }} />
+              Register
+            </h2>
+            <p className="text-sm opacity-60 mt-2 font-medium italic">Join the librarian network</p>
+          </header>
 
-        {/* Email Field  */}
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Email</span>
-          </label>
-          <input
-            type="email"
-            {...register("email", { required: true })}
-            placeholder="email@example.com"
-            class="input input-bordered w-full"
-          />
-          {errors.email?.type === "required" && (
-            <span className="text-red-500">Email is required</span>
-          )}
-        </div>
+          
 
-        {/* password field  */}
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Password</span>
-          </label>
-          <input
-            type="password"
-            {...register("password", {
-              required: true,
-              minLength: 6,
-            })}
-            placeholder="Must be at least 6 characters"
-            class="input input-bordered w-full"
-          />
-          {errors.password?.type === "required" && (
-            <span className="text-red-500">Password is required</span>
-          )}
-          {errors.password?.type === "minLength" && (
-            <span className="text-red-500">
-              Password must be 6 character or more
-            </span>
-          )}
-        </div>
+          <form onSubmit={handleSubmit(handleRegistration)} className="space-y-4">
+            
+            {/* Name Field */}
+            <div className="form-control">
+              <label className="label py-1">
+                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
+                  <FaUser /> Full Name
+                </span>
+              </label>
+              <input
+                type="text"
+                {...register("name", { required: "Name is required" })}
+                placeholder="John Doe"
+                className="input input-bordered w-full focus:outline-none"
+              />
+              {errors.name && <span className="text-error text-xs mt-1">{errors.name.message}</span>}
+            </div>
 
-        {/* image field  */}
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Profile Image</span>
-          </label>
-          <input
-            {...register("photo", { required: true })}
-            type="file"
-            class="file-input file-input-bordered file-input-md w-full"
-          />
-          {errors.photo?.type === "required" && (
-            <span className="text-red-500">Photo is required</span>
-          )}
-        </div>
+            {/* Email Field */}
+            <div className="form-control">
+              <label className="label py-1">
+                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
+                  <FaEnvelope /> Email Address
+                </span>
+              </label>
+              <input
+                type="email"
+                {...register("email", { required: "Email is required" })}
+                placeholder="name@company.com"
+                className="input input-bordered w-full focus:outline-none"
+              />
+              {errors.email && <span className="text-error text-xs mt-1">{errors.email.message}</span>}
+            </div>
 
-        <div class="form-control mt-6">
-          <button type="submit" class="btn btn-primary w-full">
-            Register Account
-          </button>
+            {/* Password Field */}
+            <div className="form-control">
+              <label className="label py-1">
+                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
+                  <FaLock /> Password
+                </span>
+              </label>
+              <input
+                type="password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Minimum 6 characters" }
+                })}
+                placeholder="••••••••"
+                className="input input-bordered w-full focus:outline-none"
+              />
+              {errors.password && <span className="text-error text-xs mt-1">{errors.password.message}</span>}
+            </div>
+
+            {/* Image Upload Field */}
+            <div className="form-control">
+              <label className="label py-1">
+                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
+                  <FaImage /> Profile Photo
+                </span>
+              </label>
+              <input
+                type="file"
+                {...register("photo", { required: "Photo is required" })}
+                className="file-input file-input-bordered file-input-md w-full bg-base-200"
+              />
+              {errors.photo && <span className="text-error text-xs mt-1">{errors.photo.message}</span>}
+            </div>
+
+            {/* Submit Button */}
+            <div className="form-control pt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn text-white border-none shadow-lg"
+                style={{ backgroundColor: accentColor }}
+              >
+                {loading ? <span className="loading loading-spinner"></span> : "SignUp"}
+              </button>
+            </div>
+          </form>
+
+          {/* Footer Link */}
+          <div className="mt-8 text-center border-t border-base-300 pt-6">
+            <p className="text-sm opacity-70">
+              Already have an account?
+              <Link
+                state={location.state}
+                to="/login"
+                className="font-bold ml-2 hover:underline"
+                style={{ color: accentColor }}
+              >
+                Sign In
+              </Link>
+            </p>
+          </div>
         </div>
-        {/* Link to Registration */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-600">
-            Already have an account?
-            <Link
-              state={location.state}
-              to="/login"
-              className="link link-hover text-blue-600 font-semibold ml-1"
-            >
-              Login
-            </Link>
-          </p>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

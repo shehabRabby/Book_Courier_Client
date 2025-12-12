@@ -1,84 +1,99 @@
 import React from "react";
 import LatestBookCard from "../../../Components/Home/LatestBookCard";
-import { FaBookReader, FaClock } from "react-icons/fa"; // Import additional icons
+import { FaBookReader, FaClock, FaArrowRight } from "react-icons/fa"; 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "../../../Components/Logo/Loading/Loading";
-// FIX: Corrected import from "react-router" to "react-router-dom"
-import { Link } from "react-router"; 
+// FIX: Using react-router-dom for proper navigation
+import { Link } from "react-router-dom"; 
 
 const LatestBook = () => {
-  // --- Custom Accent Color Mapping for theme toggling ---
-  const ACCENT_COLOR_CLASS = "text-pink-600 dark:text-pink-400";
-  const ACCENT_BG_OPAQUE = "bg-pink-600";
-  const ACCENT_HOVER_BTN =
-    "hover:bg-pink-700 hover:shadow-xl focus:ring-pink-500";
+  // --- Master Brand Tokens ---
+  const ACCENT_TEXT = "text-[#ff0077]";
+  const ACCENT_BG = "bg-[#ff0077]";
+  const ACCENT_HOVER = "hover:bg-[#ff0071] hover:shadow-pink-500/30";
 
+  const {
+    data: latestBooks = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["latestBooks"],
+    queryFn: async () => {
+      const result = await axios.get(
+        `${import.meta.env.VITE_API_URL}/latest-books`
+      );
+      return result.data;
+    },
+  });
 
-  const {
-    data: LatestBooks = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["latestBooks"],
-    queryFn: async () => {
-      const result = await axios(
-        `${import.meta.env.VITE_API_URL}/latest-books`
-      );
-      return result.data;
-    },
-  });
+  // Error Handling UI
+  if (isError) {
+    return (
+      <div className="py-20 text-center">
+        <h2 className="text-2xl font-bold text-error">System Sync Failed</h2>
+        <p className="opacity-60">Unable to retrieve catalog data from server.</p>
+      </div>
+    );
+  }
 
-  //loading spinner for data fetch
-  if (isError) return <h1>Data fetch error.......</h1>;
-  if (isLoading) return <Loading></Loading>;
+  // Loading State
+  if (isLoading) return <Loading />;
 
-  return (
-    // Theme-aware background and border classes
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-base-200 border-t border-b border-base-300">
-      <div className="text-center mb-12">
-        
-        {/* Theme-aware accent color */}
-        <p className={`text-sm font-semibold tracking-wide uppercase flex items-center justify-center ${ACCENT_COLOR_CLASS}`}>
-          <FaClock className="mr-2 text-base animate-pulse" />
-          New Arrivals This Week
-        </p>
-        
-        {/* Theme-aware text color */}
-        <h2 className="mt-2 text-4xl leading-10 font-extrabold text-base-content sm:text-5xl sm:leading-none md:text-6xl">
-          <span className="inline-flex items-center">
-            
-            {/* Theme-aware accent color */}
-            <FaBookReader className={`mr-4 ${ACCENT_COLOR_CLASS} text-4xl md:text-5xl hidden md:block`} />
-            Explore Our Latest Books
-          </span>
-        </h2>
-        
-        {/* Theme-aware paragraph color */}
-        <p className="mt-3 max-w-2xl mx-auto text-xl text-base-content opacity-70 sm:mt-4">
-          Be the first to discover the newest additions by our library partners.
-        </p>
-      </div>
+  return (
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-base-200 border-t border-base-300">
+      <div className="max-w-[1600px] mx-auto">
+        
+        {/* --- Header Section --- */}
+        <div className="text-center mb-16">
+          <div className={`inline-flex items-center justify-center space-x-2 px-4 py-1.5 rounded-full bg-base-100 border border-base-300 shadow-sm mb-6`}>
+            <FaClock className={`${ACCENT_TEXT} animate-pulse text-xs`} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">
+              Live Catalog Feed
+            </span>
+          </div>
 
-      <div className=" grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 mx-auto">
-        {/* Map over the dummy data to render 8 cards */}
-        {LatestBooks.map((book) => (
-          <LatestBookCard key={book._id} book={book} />
-        ))}
-      </div>
+          <h2 className="text-4xl md:text-6xl font-black text-base-content tracking-tight">
+            Latest <span className={ACCENT_TEXT}>Acquisitions</span>
+          </h2>
+          
+          <p className="mt-6 max-w-2xl mx-auto text-lg text-base-content opacity-60 leading-relaxed">
+            Automatic synchronization with our partner libraries brings you the 
+            most recent literature as soon as it enters the system.
+          </p>
+        </div>
 
-      {/* --- Go All Book Section (Theme-aware button) --- */}
-      <div className="mt-12 text-center">
-        <Link
-          to="/all-books"
-          // REMOVED the problematic comment line from inside the Link component
-          className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white ${ACCENT_BG_OPAQUE} ${ACCENT_HOVER_BTN} transition duration-300 transform hover:scale-105`}
-        >
-          See All Books
-        </Link>
-      </div>
-    </section>
-  );
+        {/* --- Responsive Grid Layout --- */}
+        {/*  */}
+        {latestBooks.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
+            {latestBooks.slice(0, 10).map((book) => (
+              <LatestBookCard key={book._id} book={book} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-base-100 rounded-3xl border-2 border-dashed border-base-300">
+            <FaBookReader className="mx-auto text-5xl opacity-10 mb-4" />
+            <p className="text-xl font-bold opacity-30">No new entries detected this week.</p>
+          </div>
+        )}
+
+        {/* --- Footer / Navigation --- */}
+        <div className="mt-16 text-center">
+          <Link
+            to="/all-books"
+            className={`group inline-flex items-center px-10 py-4 ${ACCENT_BG} text-white font-black text-sm uppercase tracking-widest rounded-full transition-all duration-300 transform hover:scale-105 ${ACCENT_HOVER} shadow-xl`}
+          >
+            Access Full Archive
+            <FaArrowRight className="ml-3 transition-transform group-hover:translate-x-2" />
+          </Link>
+          <p className="mt-4 text-[10px] font-bold opacity-30 uppercase tracking-tighter">
+            Authorized Users Only • {latestBooks.length} Items Listed
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default LatestBook;

@@ -1,50 +1,32 @@
 import React, { useState } from "react";
 import {
-  FaShoppingCart,
-  FaBook,
-  FaUserEdit,
-  FaStar,
-  FaRulerVertical,
-  FaGlobe,
-  FaCheckCircle,
-  FaInfoCircle,
-  FaTag,
-  FaCalendarAlt,
-  FaHeart,
+  FaShoppingCart, FaBook, FaUserEdit, FaStar,
+  FaRulerVertical, FaGlobe, FaCheckCircle, FaInfoCircle,
+  FaTag, FaCalendarAlt, FaHeart, FaChevronLeft
 } from "react-icons/fa";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 import useAuth from "../../Hooks/useAuth";
 import OrderNowModal from "./OrderNowModal";
-import { useParams } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import Loading from "../../Components/Logo/Loading/Loading";
 import ReviewSection from "./ReviewSection";
-import toast from "react-hot-toast";
+import Loading from "../../Components/Logo/Loading/Loading";
 
-const accentColor = "#ff0077";
+const ACCENT_COLOR = "#ff0077";
 
-const DetailFactCard = ({
-  icon: Icon,
-  title,
-  value,
-  bgColor,
-  borderColor,
-  valueColor,
-  delay,
-}) => (
+// --- Metadata Fact Card (Glass Effect) ---
+const DetailFactCard = ({ icon: Icon, title, value, colorClass, delay }) => (
   <div
-    className={`p-3 sm:p-4 ${bgColor} rounded-xl shadow-lg border-b-4 ${borderColor} 
-                    transition duration-300 hover:shadow-xl hover:scale-[1.02] 
-                    animate-fadeInUp`}
+    className={`group p-4 bg-base-100 border border-base-300 rounded-2xl shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 animate-fadeInUp`}
     style={{ animationDelay: `${delay}ms` }}
   >
-    <Icon className={`text-2xl ${valueColor} mx-auto mb-1`} />
-    <p className="text-xs text-gray-500 uppercase font-semibold">{title}</p>
-    <p
-      className={`font-bold text-xl ${valueColor} capitalize truncate`}
-      title={value}
-    >
+    <div className={`w-10 h-10 rounded-xl mb-3 flex items-center justify-center bg-base-200 transition-colors group-hover:bg-[#ff0077] group-hover:text-white ${colorClass}`}>
+      <Icon className="text-xl" />
+    </div>
+    <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mb-1">{title}</p>
+    <p className="font-bold text-lg text-base-content truncate" title={value}>
       {value}
     </p>
   </div>
@@ -54,216 +36,165 @@ const BookDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  // 1. Fetch Book Data
-  const {
-    data: book = {},
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
+  const { data: book = {}, isLoading, isError, refetch } = useQuery({
     queryKey: ["book", id],
     queryFn: async () => {
-      const result = await axios(`${import.meta.env.VITE_API_URL}/books/${id}`);
-      return result.data;
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/books/${id}`);
+      return data;
     },
   });
 
   const {
-    _id,
-    authorName,
-    bookTitle,
-    category,
-    description,
-    isbn,
-    language,
-    page,
-    photo,
-    price,
-    publicationDate,
-    rating,
-    status,
+    _id, authorName, bookTitle, category, description, isbn,
+    language, page, photo, price, publicationDate, rating, status
   } = book;
 
-  // 2. Wishlist Mutation Logic
   const { mutateAsync: handleAddToWishlist } = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error("Please login to add to wishlist");
-      
-      const wishlistData = {
-        bookId: _id, // Original ID to link back from wishlist page
-        bookTitle,
-        authorName,
-        photo,
-        price,
-        category,
-        rating,
-        userEmail: user?.email,
-        addedAt: new Date(),
-      };
+      if (!user) throw new Error("Authentication Required");
+      const wishlistData = { bookId: _id, bookTitle, authorName, photo, price, category, rating, userEmail: user?.email };
       return await axios.post(`${import.meta.env.VITE_API_URL}/wishlist`, wishlistData);
     },
-    onSuccess: () => {
-      toast.success("Saved to your wishlist! ❤️");
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to add to wishlist");
-    },
+    onSuccess: () => toast.success("Added to your wishlist!"),
+    onError: (err) => toast.error(err.message || "Failed to update wishlist"),
   });
 
-  const currentUser = {
-    name: user?.displayName || "Your Name",
-    email: user?.email || "name@example.com",
-  };
-
   if (isLoading) return <Loading />;
-  if (isError)
-    return (
-      <h1 className="text-center text-red-600 text-3xl pt-20">
-        Book details not found
-      </h1>
-    );
+  if (isError) return <div className="py-20 text-center text-error font-bold">Error: Resource not found.</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-5xl font-extrabold text-gray-900 text-center mb-12 animate-fadeInDown">
-        Book Overview
-      </h1>
+    <div className="min-h-screen bg-base-200 py-12 px-4 sm:px-8">
+      
+      {/* --- Navigation & Header --- */}
+      <div className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2 opacity-60 hover:opacity-100">
+          <FaChevronLeft /> Back to Library
+        </button>
+        <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-success animate-ping"></span>
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-50">System Active</span>
+        </div>
+      </div>
 
-      <div
-        className="max-w-7xl mx-auto bg-white shadow-3xl rounded-3xl p-6 lg:p-12 border border-gray-100"
-        style={{ animationDelay: "100ms" }}
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Column 1: Book Cover and Actions */}
-          <div className="lg:col-span-1 flex flex-col items-center">
-            <img
-              src={photo}
-              alt={bookTitle}
-              className="w-full max-w-xs h-auto rounded-xl shadow-2xl border-4 border-gray-100 
-                                       transform transition duration-500 hover:scale-[1.03] hover:shadow-3xl"
-            />
-            
-            <div className="mt-8 w-full max-w-xs">
-              {/* Price Box */}
-              <div className="text-center mb-6 p-4 bg-gray-100 rounded-xl border border-gray-200">
-                <p className="text-sm text-gray-600 font-medium mb-1">Book Price</p>
-                <p className="text-5xl font-black text-gray-900">
-                  <span className="text-2xl align-top text-gray-600">$</span>
-                  {price}
-                </p>
+      <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        {/* --- Left Column: Visuals --- */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="sticky top-10">
+            <div className="relative group overflow-hidden rounded-[2rem] shadow-2xl border-4 border-base-100">
+              <img src={photo} alt={bookTitle} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+
+            <div className="mt-8 bg-base-100 p-8 rounded-[2rem] border border-base-300 shadow-xl">
+              <div className="flex justify-between items-end mb-8">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-tighter opacity-40">Rental / Purchase</p>
+                  <h3 className="text-4xl font-black text-base-content">${price}</h3>
+                </div>
+                <div className="badge badge-outline border-base-300 opacity-50">{status}</div>
               </div>
 
-              {/* Action Buttons: Order & Wishlist */}
-              <div className="flex gap-4">
-                <button
+              <div className="flex flex-col gap-3">
+                <button 
                   onClick={() => setIsModalOpen(true)}
-                  className="flex-grow flex items-center justify-center py-4 px-6 rounded-xl shadow-xl text-xl font-bold text-white transition-all duration-300 focus:ring-4 focus:ring-offset-2 focus:ring-opacity-70 transform hover:scale-[1.01] active:scale-[0.99]"
-                  style={{
-                    backgroundColor: accentColor,
-                    "--tw-ring-color": accentColor,
-                  }}
+                  className="btn btn-lg border-none text-white hover:scale-[1.02] shadow-xl shadow-pink-500/20"
+                  style={{ backgroundColor: ACCENT_COLOR }}
                 >
-                  <FaShoppingCart className="mr-3" /> Order Now
+                  <FaShoppingCart className="mr-2" /> Order Asset
                 </button>
-
-                <button
+                <button 
                   onClick={handleAddToWishlist}
-                  className="p-4 rounded-xl border-2 transition-all duration-300 hover:bg-pink-50 flex items-center justify-center"
-                  style={{ borderColor: accentColor, color: accentColor }}
-                  title="Add to Wishlist"
+                  className="btn btn-lg btn-outline hover:bg-transparent"
+                  style={{ color: ACCENT_COLOR, borderColor: `${ACCENT_COLOR}33` }}
                 >
-                  <FaHeart className="text-2xl" />
+                  <FaHeart className="mr-2" /> Save to Wishlist
                 </button>
-              </div>
-
-              <div className="text-center mt-4 p-2 bg-yellow-50 rounded-lg text-sm text-yellow-800 font-semibold border-l-4 border-yellow-400 animate-pulse-slow">
-                Limited Stock Available!
-              </div>
-            </div>
-          </div>
-
-          {/* Column 2 & 3: Details */}
-          <div className="lg:col-span-2 space-y-10">
-            <header className="border-b pb-4 border-gray-100 animate-fadeInUp" style={{ animationDelay: "200ms" }}>
-              <h2 className="text-5xl font-black text-gray-900 leading-snug">{bookTitle}</h2>
-              <p className="text-2xl text-gray-600 font-semibold mt-2 flex items-center">
-                <FaUserEdit className="mr-2" style={{ color: accentColor }} />
-                <span className="text-gray-700">by</span> {authorName}
-              </p>
-            </header>
-
-            {/* Fact Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <DetailFactCard icon={FaStar} title="Rating" value={`${rating} / 5`} bgColor="bg-blue-50" borderColor="border-blue-500" valueColor="text-blue-800" delay={300} />
-              <DetailFactCard icon={FaCheckCircle} title="Status" value={status} bgColor="bg-green-50" borderColor="border-green-500" valueColor="text-green-800" delay={350} />
-              <DetailFactCard icon={FaTag} title="Genre" value={category} bgColor="bg-purple-50" borderColor="border-purple-500" valueColor="text-purple-800" delay={400} />
-              <DetailFactCard icon={FaRulerVertical} title="Pages" value={page} bgColor="bg-orange-50" borderColor="border-orange-500" valueColor="text-orange-800" delay={450} />
-            </div>
-
-            {/* Description */}
-            <div className="animate-fadeInUp" style={{ animationDelay: "500ms" }}>
-              <h3 className="text-3xl font-bold text-gray-800 border-b-2 pb-2 mb-4 border-gray-100 flex items-center">
-                <FaInfoCircle className="mr-2 text-gray-500" /> Description
-              </h3>
-              <p className="text-gray-700 leading-relaxed text-lg bg-gray-50 p-4 rounded-xl shadow-inner border border-gray-100">
-                {description}
-              </p>
-            </div>
-
-            {/* Publication Details */}
-            <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-md animate-fadeInUp" style={{ animationDelay: "600ms" }}>
-              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <FaBook className="mr-2" style={{ color: accentColor }} /> Key Publication Details
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-600">
-                <p className="flex items-center font-medium p-3 bg-red-50 rounded-lg shadow-sm">
-                  <FaCalendarAlt className="mr-3 text-red-600" />
-                  <span className="font-semibold text-gray-700 mr-2">Published:</span> {publicationDate}
-                </p>
-                <p className="flex items-center font-medium p-3 bg-gray-50 rounded-lg shadow-sm">
-                  <FaBook className="mr-3 text-blue-500" />
-                  <span className="font-semibold text-gray-700 mr-2">ISBN:</span> {isbn}
-                </p>
-                <p className="flex items-center font-medium p-3 bg-gray-50 rounded-lg shadow-sm">
-                  <FaGlobe className="mr-3 text-green-500" />
-                  <span className="font-semibold text-gray-700 mr-2">Language:</span> {language}
-                </p>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Review Section */}
-      <div className="max-w-7xl mx-auto mt-12">
-        <ReviewSection
-          bookId={_id}
-          userEmail={currentUser.email}
-          userName={currentUser.name}
-          refetchBook={refetch}
-        />
-      </div>
+        {/* --- Right Column: Intelligence & Data --- */}
+        <div className="lg:col-span-8 space-y-10">
+          <section className="animate-fadeInUp">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="h-1 w-12 bg-[#ff0077] rounded-full"></span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] opacity-40">{category}</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black text-base-content leading-tight mb-4">{bookTitle}</h1>
+            <div className="flex items-center gap-4 text-xl font-bold opacity-70">
+              <FaUserEdit className="text-[#ff0077]" />
+              <span>{authorName}</span>
+            </div>
+          </section>
 
-      {/* Order Modal */}
-      <OrderNowModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        currentUser={currentUser}
-        bookPrice={price}
-        bookId={_id}
-        bookTitle={bookTitle}
+          {/* Metadata Pulse Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <DetailFactCard icon={FaStar} title="System Rating" value={`${rating} / 5`} colorClass="text-yellow-500" delay={100} />
+            <DetailFactCard icon={FaCheckCircle} title="Registry Status" value={status} colorClass="text-success" delay={200} />
+            <DetailFactCard icon={FaRulerVertical} title="Page Count" value={page} colorClass="text-info" delay={300} />
+            <DetailFactCard icon={FaGlobe} title="Language" value={language} colorClass="text-secondary" delay={400} />
+          </div>
+
+          {/* Description Section */}
+          <section className="bg-base-100 p-8 rounded-3xl border border-base-300">
+            <h3 className="flex items-center text-xl font-black mb-6 gap-3">
+              <FaInfoCircle className="opacity-20" /> Narrative Overview
+            </h3>
+            <p className="text-lg opacity-70 leading-relaxed font-medium">
+              {description}
+            </p>
+          </section>
+
+          {/* Technical Specs */}
+          
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-center p-6 bg-base-300 rounded-2xl gap-4">
+              <FaCalendarAlt className="text-2xl opacity-30" />
+              <div>
+                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest">Release Date</p>
+                <p className="font-bold">{publicationDate}</p>
+              </div>
+            </div>
+            <div className="flex items-center p-6 bg-base-300 rounded-2xl gap-4">
+              <FaBook className="text-2xl opacity-30" />
+              <div>
+                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest">Serial Number (ISBN)</p>
+                <p className="font-bold">{isbn}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Community Feedback */}
+          <div className="pt-10 border-t border-base-300">
+             <ReviewSection 
+                bookId={_id} 
+                userEmail={user?.email} 
+                userName={user?.displayName} 
+                refetchBook={refetch} 
+             />
+          </div>
+        </div>
+      </main>
+
+      <OrderNowModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        currentUser={{ name: user?.displayName, email: user?.email }} 
+        bookPrice={price} 
+        bookId={_id} 
+        bookTitle={bookTitle} 
       />
 
-      {/* Styles remained the same as your previous code */}
-      <style jsx global>{`
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fadeInDown { animation: fadeInDown 0.3s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fadeInUp { animation: fadeInUp 0.5s ease-out both; }
-        .animate-fadeInUp[style*="animation-delay"] { opacity: 0; }
-        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .animate-pulse-slow { animation: pulse-slow 4s infinite; }
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeInUp { animation: fadeInUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; opacity: 0; }
       `}</style>
     </div>
   );

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { IoSearchOutline } from "react-icons/io5";
+import { IoSearchOutline, IoLocationSharp } from "react-icons/io5";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 
-// Fix for the default Leaflet marker issue
+// Leaflet Marker Icon Fix
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -12,60 +12,43 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-
-// 💡 STATIC DATA FOR THE CITY LIST (8 Districts)
-const staticDistricts = [
-    "Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet",
-    "Barisal", "Rangpur", "Mymensingh",
-];
-
+const staticDistricts = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet", "Barisal", "Rangpur", "Mymensingh"];
 
 // --- MAP CONTROLLER ---
 const MapController = ({ center, zoom }) => {
     const map = useMap();
-    
     useEffect(() => {
-        if (center && center.length === 2 && !isNaN(center[0]) && !isNaN(center[1])) {
-            map.flyTo(center, zoom || 10, {
-                duration: 2
-            });
+        if (center) {
+            map.flyTo(center, zoom || 11, { duration: 1.5, easeLinearity: 0.25 });
         }
     }, [center, map, zoom]);
-
     return null;
 };
-
 
 const CoverageCity = () => {
     const [cityData, setCityData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [mapFocusCenter, setMapFocusCenter] = useState(null); 
-    // 💡 NEW STATE: To store districts that match the partial search term
     const [matchingDistricts, setMatchingDistricts] = useState([]); 
-
-    const defaultPosition = [23.8103, 90.4125]; // Dhaka coordinates
+    const accentColor = "#ff0077"; // Brand Pink
+    const defaultPosition = [23.8103, 90.4125];
 
     useEffect(() => {
         const fetchCityData = async () => {
             try {
                 const response = await fetch('/ShareCity.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
                 const data = await response.json();
                 setCityData(data);
             } catch (error) {
-                console.error("Failed to fetch city data:", error);
+                console.error("Map Data Error:", error);
             } finally {
                 setIsLoading(false);
             }
         };
-
         fetchCityData();
     }, []);
 
-    // 💡 REUSABLE FUNCTION to find data and update map focus (now used for exact match or first partial match)
     const findAndFocusDistrict = (term) => {
         const lowerTerm = term.trim().toLowerCase();
         if (!lowerTerm) {
@@ -74,191 +57,132 @@ const CoverageCity = () => {
             return;
         }
 
-        // 1. Filter based on partial match
         const matches = cityData.filter(city => 
-            city.district && city.district.toLowerCase().includes(lowerTerm)
+            city.district?.toLowerCase().includes(lowerTerm)
         );
         
-        // 2. Update the displayed list of matching districts
         setMatchingDistricts(matches);
 
-        // 3. Focus the map on the first found match (if any)
-        const firstMatch = matches[0];
-
-        if (firstMatch && firstMatch.latitude !== undefined && firstMatch.longitude !== undefined) {
-            setMapFocusCenter([firstMatch.latitude, firstMatch.longitude]);
-        } else if (matches.length > 0) {
-            // If matches exist but coordinates are bad, don't fly, just show list.
-            setMapFocusCenter(null); 
-        } else {
-            // No matches found, reset focus
-            setMapFocusCenter(defaultPosition);
-            
-            // Only alert if the user explicitly submitted a full search term that failed
-            if (term === searchTerm && searchTerm.length > 0) {
-                 alert(`District starting with "${term}" not found.`);
+        if (matches.length > 0) {
+            const firstMatch = matches[0];
+            if (firstMatch.latitude && firstMatch.longitude) {
+                setMapFocusCenter([firstMatch.latitude, firstMatch.longitude]);
             }
         }
     };
 
-
-    // 💡 Logic for Search Input Change
-    const handleInputChange = (e) => {
-        const term = e.target.value;
-        setSearchTerm(term);
-        // Call the focus function immediately on change for live filtering
-        findAndFocusDistrict(term);
-    };
-
-    // 💡 Logic for Search Button Submission (Use this to confirm the search)
-    const handleSearch = (e) => {
-        e.preventDefault(); 
-        findAndFocusDistrict(searchTerm);
-    };
-
-
-    // Determine the map center
-    const firstCityWithCoords = cityData.find(city => city.latitude !== undefined && city.longitude !== undefined && !isNaN(city.latitude) && !isNaN(city.longitude));
-    
-    const initialMapCenter = firstCityWithCoords
-        ? [firstCityWithCoords.latitude, firstCityWithCoords.longitude]
-        : defaultPosition;
-    
-    // If mapFocusCenter is explicitly null (e.g., partial match but bad coords), use initial.
-    const currentMapCenter = mapFocusCenter === null ? initialMapCenter : mapFocusCenter;
-
-
-    if (isLoading) {
-        return (
-            <div className="py-24 text-center">
-                <span className="loading loading-spinner loading-lg text-primary"></span>
-                <p className="mt-4 text-lg text-neutral">Loading service coverage data...</p>
-            </div>
-        );
-    }
-
-    if (!cityData || cityData.length === 0) {
-        return (
-            <div className="py-24 text-center">
-                <p className="text-xl text-warning font-bold">Warning: Map data not available, but serving major districts listed below.</p>
-            </div>
-        );
-    }
+    if (isLoading) return (
+        <div className="h-96 flex flex-col items-center justify-center bg-base-100">
+            <span className="loading loading-ring loading-lg" style={{ color: accentColor }}></span>
+            <p className="mt-4 font-bold opacity-50 uppercase tracking-widest text-xs">Initializing Satellite Data</p>
+        </div>
+    );
 
     return (
-        <section className="py-16 md:py-24 bg-base-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-4xl font-extrabold text-pink-900  tracking-tight mb-4">
-                    Our Service Coverage Map 📍
-                </h2>
-
-                <p className="text-xl text-base-content max-w-3xl mx-auto mb-10 opacity-80">
-                    Search by district name to fly the map to the coverage area.
-                </p>
-
-                {/* --- Search Input and Button --- */}
-                <form onSubmit={handleSearch} className="flex justify-center mb-4">
-                    <div className="form-control max-w-md w-full">
-                        <div className="flex">
-                            <input
-                                type="text"
-                                placeholder="Start typing a district (e.g., dhak, rang)..."
-                                className="input input-bordered w-full"
-                                value={searchTerm}
-                                // 💡 Call the new input handler for live filtering
-                                onChange={handleInputChange} 
-                            />
-                            <button type="submit" className="btn btn-secondary">
-                                <IoSearchOutline className="w-5 h-5 mr-1" />
-                                Search
-                            </button>
-                        </div>
-                    </div>
-                </form>
+        <section className="py-12 bg-base-200 min-h-screen">
+            <div className="max-w-7xl mx-auto px-4">
                 
-                {/* 💡 LIVE SEARCH RESULTS DISPLAY */}
-                {searchTerm.length > 0 && matchingDistricts.length > 0 && (
-                    <div className="flex justify-center mb-6">
-                        <div className="max-w-md w-full text-left p-2 border border-base-300 rounded-lg bg-white shadow-lg">
-                            <p className="text-sm font-semibold text-neutral mb-1">
-                                Matching Districts ({matchingDistricts.length}):
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                                {matchingDistricts.map(city => (
-                                    <span
-                                        key={city.district}
-                                        className="badge badge-sm badge-info badge-outline cursor-pointer hover:bg-info hover:text-white transition-colors"
-                                        onClick={() => {
-                                            setSearchTerm(city.district);
-                                            findAndFocusDistrict(city.district);
-                                        }}
-                                    >
-                                        {city.district}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {/* 💡 END LIVE SEARCH RESULTS DISPLAY */}
-
-
-                {/* --- Main Map Container --- */}
-                <div
-                    className="bg-white rounded-xl shadow-2xl p-4 md:p-8"
-                    style={{ height: "700px" }}
-                >
-                    <MapContainer
-                        center={initialMapCenter} 
-                        zoom={7}
-                        scrollWheelZoom={false}
-                        style={{ height: "100%", width: "100%" }}
-                        key={cityData.length} 
-                    >
-                        <MapController center={currentMapCenter} zoom={11} /> 
-                        
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        
-                        {cityData.map((city, index) => {
-                            // Validate coordinates before creating a Marker
-                            if (city.latitude !== undefined && city.longitude !== undefined && !isNaN(city.latitude) && !isNaN(city.longitude)) {
-                                return (
-                                    <Marker key={index} position={[city.latitude, city.longitude]}> 
-                                        <Popup>
-                                            <strong className="text-primary">{city.district || city.name}</strong> <br /> 
-                                            We cover this area!
-                                        </Popup>
-                                    </Marker>
-                                );
-                            }
-                            return null;
-                        })}
-
-                    </MapContainer>
+                {/* Header Section */}
+                <div className="text-center mb-10">
+                    <h2 className="text-4xl font-black text-base-content flex items-center justify-center gap-3">
+                        <IoLocationSharp style={{ color: accentColor }} />
+                        Service Coverage
+                    </h2>
+                    <p className="opacity-60 mt-2">Connecting readers across {cityData.length} active zones</p>
                 </div>
 
-                {/* --- Supporting Content / City List (Static) --- */}
-                <div className="mt-12">
-                    <h3 className="text-2xl font-semibold text-neutral mb-4">
-                        Major Districts We Serve:
-                    </h3>
-                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-lg text-primary font-medium">
-                        {staticDistricts.map((district) => (
-                            <span
-                                key={district}
-                                className="badge badge-lg badge-outline badge-primary cursor-pointer hover:bg-primary hover:text-white transition-colors"
-                                onClick={() => {
-                                    setSearchTerm(district); 
-                                    findAndFocusDistrict(district); 
-                                }}
+                {/* Search & Map Card */}
+                <div className="bg-base-100 rounded-[2.5rem] shadow-2xl overflow-hidden border border-base-300">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 h-full">
+                        
+                        {/* Sidebar: Search & Results */}
+                        
+                        <div className="p-6 lg:border-r border-base-300 bg-base-100 flex flex-col gap-6">
+                            <div>
+                                <label className="label font-bold text-xs uppercase opacity-50">Search District</label>
+                                <div className="join w-full shadow-sm">
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Dhaka..."
+                                        className="input input-bordered join-item w-full focus:outline-none"
+                                        value={searchTerm}
+                                        onChange={(e) => {
+                                            setSearchTerm(e.target.value);
+                                            findAndFocusDistrict(e.target.value);
+                                        }}
+                                    />
+                                    <button className="btn btn-neutral join-item">
+                                        <IoSearchOutline className="text-xl" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Dynamic Results List */}
+                            <div className="flex-grow overflow-y-auto max-h-[400px]">
+                                <label className="label font-bold text-xs uppercase opacity-50 mb-2">
+                                    {searchTerm ? 'Search Results' : 'Quick Access'}
+                                </label>
+                                <div className="flex flex-col gap-2">
+                                    {(searchTerm ? matchingDistricts : cityData.slice(0, 8)).map((city) => (
+                                        <button
+                                            key={city.district}
+                                            onClick={() => {
+                                                setSearchTerm(city.district);
+                                                setMapFocusCenter([city.latitude, city.longitude]);
+                                            }}
+                                            className="btn btn-ghost btn-sm justify-start hover:bg-base-200 normal-case font-medium"
+                                        >
+                                            <IoLocationSharp style={{ color: accentColor }} />
+                                            {city.district}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Map View */}
+                        <div className="lg:col-span-3 h-[600px] lg:h-[700px] relative">
+                            <MapContainer
+                                center={defaultPosition} 
+                                zoom={7}
+                                scrollWheelZoom={true}
+                                className="h-full w-full z-10"
                             >
-                                {district}
-                            </span>
-                        ))}
+                                <MapController center={mapFocusCenter} zoom={12} /> 
+                                <TileLayer
+                                    attribution='&copy; OpenStreetMap contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                {cityData.map((city, idx) => (
+                                    city.latitude && (
+                                        <Marker key={idx} position={[city.latitude, city.longitude]}> 
+                                            <Popup>
+                                                <div className="p-1">
+                                                    <h3 className="font-bold text-lg" style={{ color: accentColor }}>{city.district}</h3>
+                                                    <p className="text-xs opacity-70">Active Library Node</p>
+                                                    <div className="divider my-1"></div>
+                                                    <button className="btn btn-xs btn-outline w-full mt-1">View Local Books</button>
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                    )
+                                ))}
+                            </MapContainer>
+                        </div>
                     </div>
+                </div>
+
+                {/* Bottom Stats */}
+                <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {staticDistricts.map((d) => (
+                        <div 
+                            key={d} 
+                            onClick={() => findAndFocusDistrict(d)}
+                            className="bg-base-100 p-4 rounded-2xl border border-base-300 hover:border-pink-500 cursor-pointer transition-all text-center group"
+                        >
+                            <span className="text-sm font-bold group-hover:text-pink-500 transition-colors">{d}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>
