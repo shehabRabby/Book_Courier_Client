@@ -42,7 +42,7 @@ const Navbar = () => {
               : "text-base-content hover:text-primary"
           }
         >
-          All Books
+          Books
         </NavLink>
       </li>
       {/* ... (Other links using similar NavLink styling) */}
