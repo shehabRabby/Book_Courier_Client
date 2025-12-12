@@ -148,7 +148,7 @@ const CoverageCity = () => {
     return (
         <section className="py-16 md:py-24 bg-base-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-4xl font-extrabold text-neutral tracking-tight mb-4">
+                <h2 className="text-4xl font-extrabold text-pink-900  tracking-tight mb-4">
                     Our Service Coverage Map 📍
                 </h2>
 

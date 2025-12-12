@@ -17,20 +17,13 @@ import {
 
 const AboutUs = () => {
   // --- Custom Accent Color Mapping for #ff0077 (Electric Pink) ---
-  // Keeping the definitions clean and theme-aware (using dark: prefix for the pink)
   const ACCENT_COLOR_CLASS = "text-pink-600 dark:text-pink-400";
   const ACCENT_BG_OPAQUE = "bg-pink-600";
   const ACCENT_HOVER_BTN =
     "hover:bg-pink-700 hover:shadow-lg focus:ring-pink-500";
-    
-    // This is the variable used for lighter backgrounds
   const ACCENT_BG_LIGHT_OPACITY = "bg-pink-100 dark:bg-pink-900"; 
     
-    // --- Removed the conflicting temporary variables (ACCENT_COLOR_CLASS_CUSTOM, CUSTOM_PINK) ---
-    // --- Removed the conflicting re-assignments for ACCENT_COLOR_CLASS and ACCENT_BG_OPAQUE ---
-
   const coreValues = [
-    // ... (Core Values remain the same)
     {
       icon: <TruckIcon className="w-8 h-8" />,
       title: "Seamless Logistics",
@@ -58,7 +51,6 @@ const AboutUs = () => {
   ];
 
   const timelineSteps = [
-    // ... (Timeline Steps remain the same)
     {
       year: "2022",
       title: "Conceptualization",
@@ -89,7 +81,6 @@ const AboutUs = () => {
       details:
         "MongoDB and Firebase secrets are rigorously protected using Node.js Environment Variables (DOTENV), preventing exposure in the source code.",
       span: "col-span-1",
-      // 🎨 CHANGE: Now uses theme-aware base background
       bg: "bg-base-100", 
     },
     {
@@ -98,7 +89,7 @@ const AboutUs = () => {
       details:
         "Optimized data fetching and state management (optional: TanStack Query) ensures a lightning-fast, smooth user experience across all dashboards.",
       span: "col-span-1",
-      bg: ACCENT_BG_LIGHT_OPACITY, // Uses the light pink theme-aware variable
+      bg: ACCENT_BG_LIGHT_OPACITY,
     },
     {
       icon: <CloudArrowUpIcon className="w-10 h-10" />,
@@ -106,7 +97,6 @@ const AboutUs = () => {
       details:
         "Server logic is strictly CORS-compliant and deployment checks ensure zero 404/504 errors, maintaining robust uptime and reliability.",
       span: "col-span-1",
-      // 🎨 CHANGE: Now uses theme-aware base background
       bg: "bg-base-100", 
     },
     {
@@ -114,34 +104,31 @@ const AboutUs = () => {
       title: "Role-Based Access Control (RBAC)",
       details:
         "User, Librarian, and Admin dashboards utilize Firebase JWT verification to secure private routes, ensuring proper authority for every action.",
-      span: "col-span-2 md:col-span-2", // Wider card
-      bg: ACCENT_BG_LIGHT_OPACITY, // Uses the light pink theme-aware variable
+      span: "col-span-2 md:col-span-2",
+      bg: ACCENT_BG_LIGHT_OPACITY,
     },
     {
       icon: <SparklesIcon className="w-10 h-10" />,
       title: "Modern UI/UX Principles",
       details:
-        "Clean alignment, pleasing color contrast, and mobile-first design ensure an intuitive and delightful experience, avoiding “gobindo” design flaws.",
+        // TEXT FIX APPLIED HERE:
+        "Clean design, pleasing color contrast, and mobile-first approach ensure an intuitive and delightful experience free from clutter and complexity.",
       span: "col-span-1",
-      // 🎨 CHANGE: Now uses theme-aware base background
       bg: "bg-base-100", 
     },
   ];
 
   return (
-    // 🎨 CHANGE 1: Outer container background uses theme-aware class
     <div className="py-12 sm:py-20 bg-base-200 text-base-content">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section 1: Hero/Introduction */}
         <header className="text-center mb-16">
           <h1
-            // 🎨 CHANGE 2: Header text color uses theme-aware class
             className={`text-5xl sm:text-6xl font-extrabold tracking-tight text-base-content mb-4 ${ACCENT_COLOR_CLASS} transition duration-500 hover:scale-[1.02]`}
           >
             BookCourier: Knowledge, Unbarred.
           </h1>
           <p 
-                // 🎨 CHANGE 3: Paragraph text color uses theme-aware class
                 className="mt-4 max-w-3xl mx-auto text-xl text-base-content opacity-80"
             >
               We are transforming the library experience from a physical journey
@@ -150,7 +137,6 @@ const AboutUs = () => {
           </p>
         </header>
 
-        {/* 🎨 CHANGE 4: Separator border color uses theme-aware class */}
         <hr className="my-12 border-base-300" />
 
         {/* Section 3: Core Values (Hover Effects) */}
@@ -162,7 +148,6 @@ const AboutUs = () => {
             {coreValues.map((value, index) => (
               <div
                 key={index}
-                // 🎨 CHANGE 5: Core Value card uses theme-aware background/border/text
                 className="p-6 rounded-lg shadow-md border border-base-300 bg-base-100 text-base-content
                                            transition duration-300 transform hover:shadow-xl hover:scale-105 hover:border-pink-600"
               >
@@ -180,12 +165,11 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* 🎨 CHANGE 6: Separator border color uses theme-aware class */}
         <hr className="my-12 border-base-300" />
 
         {/* Section 2: Mission & Vision */}
         <section
-          className={`mt-16 mb-16 p-8 rounded-3xl shadow-2xl ${ACCENT_BG_LIGHT_OPACITY} border border-pink-200 dark:border-pink-800`}
+          className={`mt-16 mb-16 p-8 rounded-3xl shadow-2xl bg-base-100 border border-pink-600 dark:border-pink-400`}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="p-4">
@@ -201,7 +185,7 @@ const AboutUs = () => {
               </p>
             </div>
 
-            <div className="p-4 border-l border-pink-300 dark:border-pink-700 md:pl-8">
+            <div className="p-4 border-l border-pink-600 dark:border-pink-400 md:pl-8">
               <div className={`flex items-center mb-4 ${ACCENT_COLOR_CLASS}`}>
                 <GlobeAltIcon className="w-10 h-10 mr-3" />
                 <h3 className="text-3xl font-bold text-base-content">Our Vision</h3>
@@ -215,12 +199,11 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* 🎨 CHANGE 7: Separator border color uses theme-aware class */}
         <hr className="my-12 border-base-300" />
 
         {/* Section 4: Animated Section - How It Works */}
         <section
-          className={`py-16 my-16 rounded-xl shadow-2xl ${ACCENT_BG_LIGHT_OPACITY} border border-pink-200 dark:border-pink-800`}
+          className={`py-16 my-16 rounded-xl shadow-2xl bg-base-300 border border-base-300 dark:border-base-content`}
         >
           <div className="text-center">
             <h2
@@ -292,7 +275,6 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* 🎨 CHANGE 8: Separator border color uses theme-aware class */}
         <hr className="my-12 border-base-300" />
 
         {/* Section 5: Our History/Timeline */}
@@ -317,7 +299,6 @@ const AboutUs = () => {
                   }`}
                 >
                   <div
-                    // 🎨 CHANGE 9: Timeline card background/border/text
                     className={`p-6 rounded-xl shadow-lg border border-base-300 bg-base-100 text-base-content transition duration-300 hover:shadow-2xl hover:border-pink-500`}
                   >
                     <h3
@@ -325,7 +306,7 @@ const AboutUs = () => {
                     >
                       {step.title}
                     
-                    </h3>
+                    </h3>
                     <p className="text-sm text-base-content opacity-70">
                       {step.text}
                     </p>
@@ -334,7 +315,6 @@ const AboutUs = () => {
                 <div className="hidden md:flex w-2/12 justify-center items-center">
                   {/* Timeline Dot */}
                   <div
-                    // 🎨 CHANGE 10: Timeline dot border color
                     className={`w-8 h-8 rounded-full ${ACCENT_BG_OPAQUE} z-10 flex items-center justify-center text-white font-bold border-4 border-base-100`}
                   >
                     {step.year.slice(2)}
@@ -350,10 +330,9 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* 🎨 CHANGE 11: Separator border color uses theme-aware class */}
         <hr className="my-12 border-base-300" />
 
-        {/* Section 6: Security and Technology - COMPLEX GRID */}
+{/* Section 6: Security and Technology - COMPLEX GRID */}
         <section className="py-16 text-center">
           <h2 className="text-4xl font-extrabold text-base-content mb-6">
             Technical Excellence: Secure & Production-Ready
@@ -368,9 +347,8 @@ const AboutUs = () => {
             {technicalFeatures.map((feature, index) => (
               <div
                 key={index}
-                // Apply dynamic column span based on feature data
-                // 🎨 CHANGE 12: Feature card border/text/background for non-accent cards
-                className={`${feature.span} ${feature.bg} p-6 rounded-xl shadow-2xl border border-base-300 transition duration-500 transform hover:scale-[1.03] hover:shadow-pink-500/50 text-left`}
+                // Theme-aware border and hover effects
+                className={`${feature.span} ${feature.bg} p-6 rounded-xl shadow-2xl border border-pink-300 dark:border-pink-700 transition duration-500 transform hover:scale-[1.03] hover:shadow-2xl hover:shadow-pink-500/50 text-left`}
               >
                 <div className={`flex items-center mb-3 ${ACCENT_COLOR_CLASS}`}>
                   {feature.icon}
@@ -386,7 +364,6 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* 🎨 CHANGE 13: Separator border color uses theme-aware class */}
         <hr className="my-12 border-base-300" />
 
         {/* Section 7: Final Call to Action */}

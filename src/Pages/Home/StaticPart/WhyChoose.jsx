@@ -45,7 +45,7 @@ const WhyChoose = () => {
         
         {/* --- Header --- */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-extrabold text-neutral tracking-tight">
+          <h2 className="text-4xl font-extrabold text-pink-900  tracking-tight">
             Why Readers Choose <span className="text-secondary">Book Courier</span>
           </h2>
           <p className="mt-4 text-xl text-base-content max-w-3xl mx-auto opacity-70">
@@ -73,7 +73,7 @@ const WhyChoose = () => {
                   {feature.title}
                 </h3>
                 
-                <p className="text-base text-base-content opacity-90 mt-2">
+                <p className="text-base text-black opacity-90 mt-2">
                   {feature.description}
                 </p>
                 

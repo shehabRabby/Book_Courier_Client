@@ -119,7 +119,7 @@ const TopWebsite = () => {
                   </p>
 
                   {/* Description */}
-                  <p className="text-base text-base-content opacity-90">
+                  <p className="text-base text-black opacity-90">
                     {library.description}
                   </p>
 
