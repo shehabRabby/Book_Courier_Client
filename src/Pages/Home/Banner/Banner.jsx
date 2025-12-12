@@ -1,89 +1,149 @@
 import React from "react";
 import { Carousel } from "react-responsive-carousel";
+import { FaArrowRight, FaBolt, FaGlobe, FaHandsHelping } from "react-icons/fa";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-// Assuming these imports are correct based on your project structure:
+
+// Assets
 import banner1 from "../../../assets/banner1.png";
 import banner2 from "../../../assets/banner2.png";
 import banner3 from "../../../assets/banner3.png";
 
-// --- Banner Content Data ---
+const ACCENT_COLOR = "#ff0077";
+
 const sliderData = [
   {
     image: banner1,
+    icon: <FaGlobe className="text-[#ff0077]" />,
+    tag: "Global Archive",
     title: "Discover Your Next Great Read",
-    description: "Thousands of titles, from new releases to timeless classics, delivered straight to you.",
-    linkText: "Shop All Books",
-    alignment: "left", // Custom alignment flag for positioning content
+    description: "Access thousands of technical manuals, timeless classics, and modern bestsellers instantly.",
+    linkText: "Explore Catalog",
+    alignment: "left",
   },
   {
-    image: banner1,
-    title: "Flash Dispatch: 1-Day Delivery",
-    description: "Get the bestsellers faster! Priority shipping on all books in our Courier's Choice collection.",
-    linkText: "View Priority Titles",
+    image: banner2, // Fixed: Using banner2
+    icon: <FaBolt className="text-[#ff0077]" />,
+    tag: "Priority Stream",
+    title: "Flash Dispatch: 24h Delivery",
+    description: "Our logistics network ensures your selected physical assets arrive within one business day.",
+    linkText: "View Express Titles",
     alignment: "center",
   },
   {
-    image: banner1,
+    image: banner3, // Fixed: Using banner3
+    icon: <FaHandsHelping className="text-[#ff0077]" />,
+    tag: "Social Impact",
     title: "Community & Literacy Focus",
-    description: "Every purchase supports local reading programs. Read well, do good.",
-    linkText: "Learn More",
+    description: "Every interaction with our platform contributes to local literacy programs and school funding.",
+    linkText: "Join The Mission",
     alignment: "right",
   },
 ];
 
 const Banner = () => {
   return (
-    // Carousel setup for auto-play and infinite looping
-    <Carousel 
+    <section className="relative overflow-hidden bg-black">
+      <Carousel 
         autoPlay={true} 
         infiniteLoop={true} 
         showThumbs={false} 
-        showStatus={false} // Hide status text (e.g., "1 of 3")
-        interval={5000} // Set slide duration to 5 seconds
-        transitionTime={500} // Set transition speed
-    >
-      {sliderData.map((slide, index) => (
-        <div key={index} className="relative h-96 md:h-[60vh] lg:h-[75vh]">
-          {/* --- 1. Background Image --- */}
-          <img 
-            src={slide.image} 
-            alt={slide.title}
-            className="w-full h-full object-cover" 
-          />
-          
-          {/* --- 2. Text Overlay Content (Positioning and Styling) --- */}
-          <div 
-            className={`absolute top-0 left-0 w-full h-full flex flex-col justify-center text-white p-6 md:p-12 
+        showStatus={false} 
+        interval={6000} 
+        transitionTime={700}
+        stopOnHover={false}
+        className="main-banner-carousel"
+      >
+        {sliderData.map((slide, index) => (
+          <div key={index} className="relative h-[70vh]">
+            
+            {/* --- Background Asset --- */}
+            <img 
+              src={slide.image} 
+              alt={slide.title}
+              className="w-full h-full object-cover scale-105 animate-slowZoom" 
+            />
+            
+            {/* --- High-Contrast Gradient Layer --- */}
+            {/*  */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+            {/* --- Content Hub --- */}
+            <div className={`absolute inset-0 flex flex-col justify-center px-6 md:px-20 lg:px-32
                 ${slide.alignment === 'left' ? 'items-start text-left' : ''}
                 ${slide.alignment === 'center' ? 'items-center text-center' : ''}
                 ${slide.alignment === 'right' ? 'items-end text-right' : ''}
-            `}
-            // Optional: Add a subtle dark overlay for better text contrast
-            style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }} 
-          >
-            <div className="max-w-xl">
-              {/* Title */}
-              <h2 className={`text-4xl md:text-6xl font-extrabold mb-4 transition duration-700 transform ${slide.alignment === 'center' ? 'md:translate-y-0' : 'md:translate-y-[-20px]'} hover:translate-y-0`}>
-                {slide.title}
-              </h2>
+            `}>
+              
+              <div className="max-w-3xl space-y-6">
+                
+                {/* Status Tag */}
+                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full mb-4">
+                  {slide.icon}
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">
+                    {slide.tag}
+                  </span>
+                </div>
 
-              {/* Short Description */}
-              <p className="text-xl md:text-2xl font-light mb-8 opacity-90">
-                {slide.description}
-              </p>
+                {/* Title */}
+                <h2 className="text-4xl md:text-7xl font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl">
+                  {slide.title.split(':').map((part, i) => (
+                    <span key={i} className={i === 1 ? "text-[#ff0077] block" : "block"}>
+                      {part}
+                    </span>
+                  ))}
+                </h2>
 
-              {/* Link Button (btn-secondary applied here) */}
-              <a 
-                href="/all-books" 
-                className="btn btn-lg btn-secondary shadow-xl transition duration-300 transform hover:scale-105"
-              >
-                {slide.linkText}
-              </a>
+                {/* Description */}
+                <p className="text-lg md:text-xl font-medium text-white/70 max-w-2xl leading-relaxed">
+                  {slide.description}
+                </p>
+
+                {/* Action CTA */}
+                <div className="pt-6">
+                  <a 
+                    href="/all-books" 
+                    className="btn btn-lg border-none text-white px-10 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-2xl hover:scale-105 transition-all group"
+                    style={{ backgroundColor: ACCENT_COLOR }}
+                  >
+                    {slide.linkText}
+                    <FaArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
+                  </a>
+                </div>
+              </div>
+
             </div>
+
+            {/* Slide Index Visualizer */}
+            <div className="absolute bottom-10 left-10 md:left-20 flex gap-2">
+                {sliderData.map((_, i) => (
+                    <div key={i} className={`h-1 transition-all duration-500 rounded-full ${index === i ? 'w-12 bg-[#ff0077]' : 'w-4 bg-white/20'}`} />
+                ))}
+            </div>
+
           </div>
-        </div>
-      ))}
-    </Carousel>
+        ))}
+      </Carousel>
+
+      <style>{`
+        @keyframes slowZoom {
+          from { transform: scale(1); }
+          to { transform: scale(1.15); }
+        }
+        .animate-slowZoom {
+          animation: slowZoom 10s infinite alternate ease-in-out;
+        }
+        .main-banner-carousel .control-dots {
+          bottom: 40px !important;
+          text-align: right !important;
+          padding-right: 5rem !important;
+        }
+        .main-banner-carousel .dot {
+            background: #ff0077 !important;
+            box-shadow: none !important;
+        }
+      `}</style>
+    </section>
   );
 };
 

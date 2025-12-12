@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom"; // Use react-router-dom
 import useAuth from "../Hooks/useAuth";
 import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
+import Logo from "../Components/Logo/Logo";
 
 const allDashboardLinks = [
   { name: "My Profile", path: "/dashboard/my-profile", icon: "fas fa-user-circle" },
@@ -58,7 +59,7 @@ const DashboardLayout = () => {
           onClick={() => setIsSidebarOpen(false)}
         >
           <i className="fas fa-book text-3xl"></i>
-          <span>BookCourier</span>
+          <Logo></Logo>
         </NavLink>
 
         {/* Navigation Links */}

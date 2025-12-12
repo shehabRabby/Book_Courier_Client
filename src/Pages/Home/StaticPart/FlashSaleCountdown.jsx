@@ -1,94 +1,94 @@
-import React, { useState, useEffect } from 'react';
-// Assuming you are using IoIcons from react-icons
-import { IoRocketOutline, IoGiftOutline } from 'react-icons/io5'; 
-import { Link } from 'react-router';
-
-// --- Countdown Logic ---
-const calculateTimeLeft = (targetDate) => {
-  const difference = +new Date(targetDate) - +new Date();
-  let timeLeft = {};
-
-  if (difference > 0) {
-    timeLeft = {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-    };
-  } else {
-    timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  }
-  return timeLeft;
-};
-
-// Set a target date (e.g., 3 days from now for a fixed offer, or calculate dynamically)
-// For this example, let's set it to tomorrow morning.
-const targetTime = new Date();
-targetTime.setDate(targetTime.getDate() + 1); // Set target time to 24 hours from now
-const fixedTargetDate = targetTime.toISOString();
-
+import React, { useState, useEffect, useMemo } from 'react';
+import { IoRocketOutline, IoGiftOutline, IoFlash } from 'react-icons/io5'; 
+import { Link } from 'react-router-dom';
 
 const FlashSaleCountdown = () => {
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(fixedTargetDate));
+  // 1. STABILIZE THE TARGET DATE
+  // We use useMemo so the end time doesn't reset every time the component updates.
+  // This sets the deadline to exactly 24 hours from when the user first loads the page.
+  const shelfLife = useMemo(() => {
+    const end = new Date();
+    end.setHours(end.getHours() + 24); 
+    return end.getTime();
+  }, []);
 
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  // 2. THE RUNNING ENGINE
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(calculateTimeLeft(fixedTargetDate));
+    const ticker = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = shelfLife - now;
+
+      if (distance < 0) {
+        clearInterval(ticker);
+        setTimeLeft(null); // Timer finished
+      } else {
+        setTimeLeft({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        });
+      }
     }, 1000);
 
-    // Clears the interval when the component unmounts
-    return () => clearTimeout(timer);
-  });
+    return () => clearInterval(ticker); // Stop the clock if the user leaves the page
+  }, [shelfLife]);
 
-  const timerComponents = Object.keys(timeLeft).map((unit) => {
-    if (!unit) {
-      return null;
-    }
+  if (!timeLeft) {
     return (
-      <div key={unit} className="flex flex-col items-center bg-base-300 p-3 rounded-lg shadow-inner w-20 md:w-24 mx-1 transition duration-500 ease-in-out transform hover:scale-105">
-        <span className="countdown font-mono text-4xl text-neutral">
-          {timeLeft[unit] < 10 ? `0${timeLeft[unit]}` : timeLeft[unit]}
-        </span>
-        <span className="text-sm font-semibold mt-1 text-base-content uppercase opacity-80">{unit}</span>
+      <div className="text-center p-20 bg-base-300">
+        <h2 className="text-3xl font-black text-error">OFFER EXPIRED</h2>
       </div>
     );
-  });
+  }
+
+  
 
   return (
-    <section id="flash-sale" className="py-20 md:py-32 bg-neutral text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-[#0a0a0a] text-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 text-center">
         
-        <div className="text-center">
-          
-          <div className="badge badge-lg badge-secondary text-base-100 mb-4 font-bold tracking-widest p-3 shadow-xl flex items-center justify-center mx-auto transition duration-300 hover:scale-105">
-            <IoRocketOutline className="w-5 h-5 mr-2" />
-            FLASH SALE ALERT!
-          </div>
-
-          <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight text-secondary-content">
-            25% OFF ALL Bestsellers
-          </h2>
-          <p className="mt-4 text-xl md:text-2xl font-light text-secondary-content opacity-90 max-w-3xl mx-auto">
-            Limited stock and only available for the next:
-          </p>
+        {/* Active Status Indicator */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff0077] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#ff0077]"></span>
+          </span>
+          <span className="text-xs font-black uppercase tracking-[0.4em] animate-pulse">
+            Live Flash Protocol Active
+          </span>
         </div>
 
-        {/* --- Countdown Timer --- */}
-        <div className="flex justify-center mt-10 space-x-2 md:space-x-4">
-          {timerComponents.length ? timerComponents : <p className="text-2xl text-warning">Offer Expired!</p>}
+        <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-12">
+          HURRY! <span className="text-[#ff0077]">25% OFF</span> ENDS IN:
+        </h2>
+
+        {/* --- The Ticking Grid --- */}
+        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+          {Object.entries(timeLeft).map(([unit, value]) => (
+            <div key={unit} className="flex flex-col items-center">
+              <div className="w-24 h-28 md:w-32 md:h-36 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl flex items-center justify-center shadow-2xl">
+                <span className="text-4xl md:text-6xl font-black font-mono tabular-nums text-white">
+                  {String(value).padStart(2, '0')}
+                </span>
+              </div>
+              <p className="mt-4 text-[10px] font-bold uppercase tracking-widest opacity-40">{unit}</p>
+            </div>
+          ))}
         </div>
 
-        {/* --- Call to Action --- */}
-        <div className="text-center mt-12">
+        <div className="mt-16">
           <Link 
-            href="/collections/flash-sale" 
-            className="btn btn-lg btn-secondary shadow-2xl hover:shadow-primary/50 transition duration-300 transform hover:scale-[1.03] group"
+            to="/all-books" 
+            className="btn btn-lg h-16 px-12 rounded-full border-none text-white font-black uppercase tracking-widest shadow-[0_0_40px_rgba(255,0,119,0.3)] hover:scale-105 transition-all"
+            style={{ backgroundColor: '#ff0077' }}
           >
-            <IoGiftOutline className="w-6 h-6 mr-2 transition-transform group-hover:rotate-6" />
-            Shop The Flash Sale Now
+            <IoGiftOutline className="text-2xl mr-2" />
+            Claim Discount Now
           </Link>
         </div>
-        
       </div>
     </section>
   );
