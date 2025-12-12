@@ -1,6 +1,6 @@
 import React from "react";
 import useAuth from "../Hooks/useAuth";
-import Loading from "../Components/Logo/Loading/Loading";
+import { FaSpinner } from "react-icons/fa";
 import { Navigate, useLocation } from "react-router";
 
 const PrivateRoute = ({ children }) => {
@@ -8,7 +8,11 @@ const PrivateRoute = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return <Loading></Loading>;
+    return (
+      <div className="h-screen flex items-center justify-center bg-[#0a0a0a]">
+        <FaSpinner className="text-[#ff0077] animate-spin text-5xl" />
+      </div>
+    );
   }
   if (!user) {
     return <Navigate state={location.pathname} to="/login"></Navigate>;
