@@ -22,6 +22,7 @@ import ManageBooks from "../Pages/Dashboard/ManageBooks/ManageBooks";
 import Invoices from "../Pages/Dashboard/Invoices/invoices";
 import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
 import PaymentPage from "../Pages/Payment/PaymentPage";
+import BookEdit from "../Pages/Dashboard/MyBook/BookEdit";
 
 export const router = createBrowserRouter([
   {
@@ -97,6 +98,10 @@ export const router = createBrowserRouter([
       {
         path: "my-books",
         Component: MyBooks,
+      },
+      {
+        path: "edit-book/:id",
+        Component: BookEdit,
       },
       {
         path: "add-book",
