@@ -158,11 +158,6 @@ const PaymentPage = () => {
 
         <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-gray-700">{message}</p>
-          {sessionId && (
-            <p className="text-xs mt-2 text-gray-500">
-              Stripe Session ID: {sessionId}
-            </p>
-          )}
         </div>
 
         <div className="mt-8 space-y-4">

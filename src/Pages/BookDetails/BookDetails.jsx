@@ -19,6 +19,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "../../Components/Logo/Loading/Loading";
+import ReviewSection from "./ReviewSection";
 
 const accentColor = "#ff0077";
 const DetailFactCard = ({
@@ -255,6 +256,16 @@ const BookDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* --- NEW REVIEW SECTION ADDED HERE --- */}
+            <div className="max-w-7xl mx-auto mt-12">
+                <ReviewSection
+                    bookId={_id}
+                    userEmail={currentUser.email}
+                    userName={currentUser.name}
+                    refetchBook={refetch} // Pass the refetch function to update the main rating card
+                />
+            </div>
 
       {/* --- Order Modal--- */}
       <OrderNowModal
