@@ -1,153 +1,159 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "../../Components/Logo/Loading/Loading";
-import LatestBookCard from "../../Components/Home/LatestBookCard";
-import { FaBookOpen, FaLayerGroup, FaFilter } from "react-icons/fa";
-import AllBookAnimation from "../../Components/AllBook/AllBookAnimation";
+import { FaBookOpen, FaLayerGroup, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import SearchSection from "../../Components/AllBook/SearchSection";
 import FilteringByRating from "../../Components/AllBook/FilteringByRating";
+import LatestBookCard from "../../Components/Home/LatestBookCard";
 
 const AllBook = () => {
+    // Pagination States
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(0);
+
+    // Filter States
     const [searchTerm, setSearchTerm] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
     const [filterRating, setFilterRating] = useState(0);
 
+    // Fetching Data with Pagination and Filters
     const {
-        data: allBooks = [],
+        data: bookData = { result: [], count: 0 },
         isLoading,
         isError,
+        refetch
     } = useQuery({
-        queryKey: ["allBooks"],
+        // 🗝️ Crucial: include page and filters in the queryKey
+        queryKey: ["allBooks", currentPage, itemsPerPage, searchTerm, filterCategory, filterRating],
         queryFn: async () => {
-            try {
-                const result = await axios(`${import.meta.env.VITE_API_URL}/books`);
-                return result.data;
-            } catch (error) {
-                console.error("Failed to fetch books:", error);
-                throw new Error("Could not fetch book data from the server.");
-            }
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/books`, {
+                params: {
+                    page: currentPage,
+                    size: itemsPerPage,
+                    search: searchTerm,
+                    category: filterCategory,
+                    rating: filterRating
+                }
+            });
+            return res.data;
         },
     });
+
+    const books = bookData.result;
+    const totalCount = bookData.count;
+    const numberOfPages = Math.ceil(totalCount / itemsPerPage);
+    const pages = [...Array(numberOfPages).keys()]; // Creates array like [0, 1, 2...]
+
+    // Reset to page 0 when filters change
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [searchTerm, filterCategory, filterRating, itemsPerPage]);
 
     const handleReset = () => {
         setSearchTerm("");
         setFilterCategory("");
         setFilterRating(0);
+        setCurrentPage(0);
     };
 
-    const filteredBooks = useMemo(() => {
-        return allBooks.filter((book) => {
-            // 1. Search Filter (Title or Author)
-            const searchMatch =
-                !searchTerm ||
-                (book.bookTitle &&
-                    book.bookTitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (book.authorName &&
-                    book.authorName.toLowerCase().includes(searchTerm.toLowerCase()));
-            
-            // 2. Category Filter
-            const categoryMatch =
-                !filterCategory ||
-                (book.category &&
-                    book.category.toLowerCase() === filterCategory.toLowerCase());
-            
-            // 3. Rating Filter
-            const ratingMatch =
-                !filterRating || (book.rating && book.rating >= filterRating);
-
-            return searchMatch && categoryMatch && ratingMatch;
-        });
-    }, [allBooks, searchTerm, filterCategory, filterRating]);
-
-    if (isError)
-        return (
-            // Use DaisyUI text class for error message
-            <h1 className="text-center text-red-500 text-3xl pt-20 text-base-content">
-                Error fetching books. Please try again.
-            </h1>
-        );
-    if (isLoading) return <Loading />;
+    if (isLoading) return <Loading></Loading>;
+    if (isError) return <h1 className="text-center text-red-500 pt-20">Error fetching books.</h1>;
 
     return (
-        // 🎨 CHANGE 1: Outer container uses theme-aware background color
         <div className="min-h-screen bg-base-200">
             <section className="py-10 px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-8">
-                    {" "}
-                    <p 
-                        // 🎨 CHANGE 2: Text color changes with theme
-                        className="text-sm font-semibold tracking-wide uppercase flex items-center justify-center text-base-content opacity-70"
-                    >
+                    <p className="text-sm font-semibold tracking-wide uppercase flex items-center justify-center text-base-content opacity-70">
                         <FaLayerGroup className="mr-2 text-base" />
-                        The Complete Collection{" "}
-                    </p>{" "}
-                    <h2 
-                        // 🎨 CHANGE 3: Header text color changes with theme
-                        className="mt-2 text-4xl leading-10 font-extrabold text-base-content sm:text-5xl"
-                    >
-                        All Published Books{" "}
-                    </h2>{" "}
+                        The Complete Collection
+                    </p>
+                    <h2 className="mt-2 text-4xl font-extrabold text-base-content sm:text-5xl">
+                        All Published Books
+                    </h2>
                 </div>
-                
-                {/* 2. Search and Filtering Container */}
-                <div 
-                    // 🎨 CHANGE 4: Inner card uses theme-aware primary background
-                    className="bg-base-100 p-6 rounded-xl shadow-lg mb-10 max-w-7xl mx-auto"
-                >
-                    {" "}
-                    <h3 
-                        // 🎨 CHANGE 5: Filter title text color changes with theme
-                        className="text-2xl font-bold text-base-content mb-4 flex items-center"
-                    >
-                        {" "}
-                        <FaFilter className="mr-2" style={{ color: "#DE2A8A" }} /> Filter &
-                        Search Tools{" "}
-                    </h3>{" "}
+
+                {/* Search and Filtering */}
+                <div className="bg-base-100 p-6 rounded-xl shadow-lg mb-10 max-w-7xl mx-auto">
+                    <h3 className="text-2xl font-bold text-base-content mb-4 flex items-center">
+                        <FaFilter className="mr-2 text-[#DE2A8A]" /> Filter & Search
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        {/* Search Bar Component - Ensure SearchSection uses theme-aware inputs */}
-                        <SearchSection
-                            searchTerm={searchTerm}
-                            setSearchTerm={setSearchTerm}
-                        />
-                        {/* Filtering Components - Ensure FilteringByRating uses theme-aware selects/text */}
+                        <SearchSection searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                         <FilteringByRating
                             filterCategory={filterCategory}
                             setFilterCategory={setFilterCategory}
                             filterRating={filterRating}
                             setFilterRating={setFilterRating}
                             handleReset={handleReset}
-                        />{" "}
-                    </div>{" "}
+                        />
+                    </div>
                 </div>
-                
-                {/* 3. Book Grid Display */}
-                {filteredBooks.length === 0 ? (
-                    <div 
-                        // 🎨 CHANGE 6: No results card uses theme-aware primary background
-                        className="text-center py-20 bg-base-100 rounded-xl shadow-lg mx-auto max-w-4xl text-base-content"
-                    >
-                        {" "}
-                        <FaBookOpen className="mx-auto text-6xl text-gray-400 mb-4" />{" "}
-                        <h3 className="text-2xl font-semibold">
-                            No Results Found{" "}
-                        </h3>{" "}
-                        <p className="text-base-content opacity-70 mt-2">
-                            Try adjusting your search query or filters.
-                        </p>{" "}
+
+                {/* Book Grid */}
+                {books.length === 0 ? (
+                    <div className="text-center py-20 bg-base-100 rounded-xl shadow-lg mx-auto max-w-4xl text-base-content">
+                        <FaBookOpen className="mx-auto text-6xl text-gray-400 mb-4" />
+                        <h3 className="text-2xl font-semibold">No Results Found</h3>
                     </div>
                 ) : (
-                    <div
-                        className="grid gap-6 max-w-7xl mx-auto grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5"
-                    >
-                        {" "}
-                        {filteredBooks.map((book) => (
-                            // Ensure LatestBookCard component uses theme-aware classes internally
-                            <LatestBookCard key={book._id} book={book} />
-                        ))}{" "}
-                    </div>
-                )}{" "}
-            </section>{" "}
+                    <>
+                        <div className="grid gap-6 max-w-7xl mx-auto grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                            {books.map((book) => (
+                                <LatestBookCard key={book._id} book={book} />
+                            ))}
+                        </div>
+
+                        {/* --- PAGINATION CONTROLS --- */}
+                        <div className="mt-16 flex flex-col items-center gap-4">
+                            <div className="join bg-base-100 shadow-md">
+                                <button 
+                                    disabled={currentPage === 0}
+                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                    className="join-item btn btn-outline border-base-300"
+                                >
+                                    <FaChevronLeft />
+                                </button>
+                                
+                                {pages.map(page => (
+                                    <button
+                                        key={page}
+                                        onClick={() => setCurrentPage(page)}
+                                        className={`join-item btn border-base-300 ${
+                                            currentPage === page ? 'bg-[#DE2A8A] text-white border-[#DE2A8A] hover:bg-[#DE2A8A]' : 'btn-outline'
+                                        }`}
+                                    >
+                                        {page + 1}
+                                    </button>
+                                ))}
+
+                                <button 
+                                    disabled={currentPage === numberOfPages - 1}
+                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                    className="join-item btn btn-outline border-base-300"
+                                >
+                                    <FaChevronRight />
+                                </button>
+                            </div>
+
+                            {/* Items per page selector */}
+                            <div className="text-center gap-2">
+                                <span className="text-sm opacity-70">Books per page:</span>
+                                <select 
+                                    value={itemsPerPage}
+                                    onChange={(e) => setItemsPerPage(parseInt(e.target.value))}
+                                    className="select select-bordered select-sm rounded-lg"
+                                >
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                    <option value={50}>50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </section>
         </div>
     );
 };
