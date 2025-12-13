@@ -4,7 +4,6 @@ import { Link, NavLink } from "react-router";
 import useAuth from "../../../Hooks/useAuth";
 import ThemeToggle from "../../../Components/ThemeToggle/ThemeToggle";
 
-
 const Navbar = () => {
   const { user, logOut } = useAuth();
 
@@ -21,12 +20,12 @@ const Navbar = () => {
   const links = (
     <>
       <li>
-        <NavLink 
-          to="/" 
+        <NavLink
+          to="/"
           // Use theme-aware classes for NavLink text
-          className={({ isActive }) => 
-            isActive 
-              ? "text-primary font-bold" 
+          className={({ isActive }) =>
+            isActive
+              ? "text-primary font-bold"
               : "text-base-content hover:text-primary"
           }
         >
@@ -34,36 +33,23 @@ const Navbar = () => {
         </NavLink>
       </li>
       <li>
-        <NavLink 
+        <NavLink
           to="/all-books"
-          className={({ isActive }) => 
-            isActive 
-              ? "text-primary font-bold" 
+          className={({ isActive }) =>
+            isActive
+              ? "text-primary font-bold"
               : "text-base-content hover:text-primary"
           }
         >
           Books
         </NavLink>
       </li>
-      {/* ... (Other links using similar NavLink styling) */}
       <li>
-        <NavLink 
-          to="/request-delivery"
-          className={({ isActive }) => 
-            isActive 
-              ? "text-primary font-bold" 
-              : "text-base-content hover:text-primary"
-          }
-        >
-          Request Delivery
-        </NavLink>
-      </li>
-      <li>
-        <NavLink 
+        <NavLink
           to="/about-us"
-          className={({ isActive }) => 
-            isActive 
-              ? "text-primary font-bold" 
+          className={({ isActive }) =>
+            isActive
+              ? "text-primary font-bold"
               : "text-base-content hover:text-primary"
           }
         >
@@ -73,11 +59,11 @@ const Navbar = () => {
       {user && (
         <>
           <li>
-            <NavLink 
+            <NavLink
               to="/dashboard"
-              className={({ isActive }) => 
-                isActive 
-                  ? "text-primary font-bold" 
+              className={({ isActive }) =>
+                isActive
+                  ? "text-primary font-bold"
                   : "text-base-content hover:text-primary"
               }
             >
@@ -88,10 +74,10 @@ const Navbar = () => {
       )}
     </>
   );
-  
+
   return (
     // 🎨 CHANGE 1: Use bg-base-100 for background and text-base-content for default text color
-    <div className="navbar shadow-md bg-base-100 text-base-content"> 
+    <div className="navbar shadow-md bg-base-100 text-base-content">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -121,14 +107,13 @@ const Navbar = () => {
         </div>
         <Logo></Logo>
       </div>
-      
+
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
-      
+
       <div className="navbar-end">
-        
-    <ThemeToggle></ThemeToggle>
+        <ThemeToggle></ThemeToggle>
 
         {user ? (
           <a onClick={handleLogOut} className="btn btn-secondary">
@@ -139,9 +124,6 @@ const Navbar = () => {
             Login
           </Link>
         )}
-        <Link to="/rider" className="btn btn-secondary ml-2">
-          Rider
-        </Link>
       </div>
     </div>
   );

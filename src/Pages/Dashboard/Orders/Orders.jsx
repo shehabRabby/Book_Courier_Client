@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 import useAuth from '../../../Hooks/useAuth'; 
 import { FaTimesCircle, FaTruckLoading, FaBoxOpen, FaClipboardList } from 'react-icons/fa';
+import useAxiosSecure from '../../../Hooks/useAxiosSecure'; 
 
 // Status transition logic
 const statusTransitions = {
@@ -13,7 +13,7 @@ const statusTransitions = {
     cancelled: 'cancelled' 
 };
 
-// 🎨 CHANGE: Enhanced Badge logic using DaisyUI semantic colors
+// Enhanced Badge logic using DaisyUI semantic colors
 const getStatusBadgeClass = (status) => {
     switch (status) {
         case 'delivered': return 'badge-info badge-outline';
@@ -29,30 +29,40 @@ const Orders = () => {
     const { user } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const accentColor = "#ff0077"; // Consistent brand color
+    const accentColor = "#ff0077"; 
     
-    const API_BASE_URL = import.meta.env.VITE_API_URL;
+    const axiosSecure = useAxiosSecure();
 
     const fetchOrders = async () => {
         if (!user?.email) return;
         setLoading(true);
         try {
-            const res = await axios.get(`${API_BASE_URL}/librarian-orders/${user.email}`);
+            // ✅ FIX APPLIED: Using the unified '/orders' endpoint.
+            // Backend must check the user's role (Admin/Librarian) 
+            // from the security token and return the appropriate dataset.
+            const res = await axiosSecure.get(`/orders`);
+            
             setOrders(res.data);
+            
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error fetching orders:", error);
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to fetch orders.',
                 icon: 'error',
-                customClass: { popup: 'bg-base-100 text-base-content' } // Theme-aware Swal
+                customClass: { popup: 'bg-base-100 text-base-content' }
             });
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => { fetchOrders(); }, [user]);
+    // Refetch when the user loads (on initial mount)
+    useEffect(() => { 
+        if (user) {
+            fetchOrders(); 
+        }
+    }, [user]);
 
     const handleStatusChange = async (orderId, currentStatus) => {
         const nextStatus = statusTransitions[currentStatus];
@@ -66,12 +76,12 @@ const Orders = () => {
             confirmButtonColor: accentColor,
             cancelButtonColor: '#6b7280',
             confirmButtonText: 'Yes, Update!',
-            background: 'var(--fallback-b1,oklch(var(--b1)))', // DaisyUI variable for bg
-            color: 'var(--fallback-bc,oklch(var(--bc)))'      // DaisyUI variable for text
+            background: 'var(--fallback-b1,oklch(var(--b1)))',
+            color: 'var(--fallback-bc,oklch(var(--bc)))'
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.patch(`${API_BASE_URL}/orders/update-status/${orderId}`, {
+                    const res = await axiosSecure.patch(`/orders/update-status/${orderId}`, {
                         newStatus: nextStatus
                     });
                     if (res.data.modifiedCount > 0) {
@@ -91,11 +101,13 @@ const Orders = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
-            confirmButtonText: 'Confirm Cancellation'
+            confirmButtonText: 'Confirm Cancellation',
+            background: 'var(--fallback-b1,oklch(var(--b1)))',
+            color: 'var(--fallback-bc,oklch(var(--bc)))'
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.patch(`${API_BASE_URL}/orders/cancel/${orderId}`);
+                    const res = await axiosSecure.patch(`/orders/cancel/${orderId}`);
                     if (res.data.modifiedCount > 0) {
                         Swal.fire('Cancelled', 'Order has been halted.', 'success');
                         fetchOrders();
@@ -116,7 +128,6 @@ const Orders = () => {
     }
 
     return (
-        // 🎨 CHANGE: Theme-aware container
         <div className="p-4 md:p-8 bg-base-200 min-h-screen text-base-content">
             <header className="mb-10 text-center">
                 <h2 className="text-4xl font-extrabold flex items-center justify-center gap-3">
@@ -140,6 +151,7 @@ const Orders = () => {
                     </thead>
                     <tbody className="divide-y divide-base-300">
                         {orders.map((order) => {
+                            const bookTitle = order.bookTitle || 'Unknown Book'; 
                             const isPaid = order.payment_status === 'paid';
                             const isFinal = order.status === 'delivered' || order.status === 'cancelled';
                             const nextStatus = statusTransitions[order.status];
@@ -148,7 +160,7 @@ const Orders = () => {
                             return (
                                 <tr key={order._id} className="hover:bg-base-200/50 transition-colors">
                                     <td>
-                                        <div className="font-bold">{order.bookTitle}</div>
+                                        <div className="font-bold">{bookTitle}</div>
                                         <div className="text-xs opacity-50">ID: {order._id.slice(-8)}</div>
                                     </td>
                                     <td className="text-sm">{order.email}</td>
@@ -172,7 +184,7 @@ const Orders = () => {
                                                 disabled={!isPaid || isFinal || !canTransition}
                                             >
                                                 {isFinal ? <FaBoxOpen className="text-lg opacity-30" /> : 
-                                                 !isPaid ? 'Unpaid' : <FaTruckLoading className="text-lg" />}
+                                                   !isPaid ? 'Unpaid' : <FaTruckLoading className="text-lg" />}
                                                 <span className="hidden lg:inline ml-2">
                                                     {isFinal ? 'Done' : canTransition ? `Next: ${nextStatus}` : 'N/A'}
                                                 </span>
@@ -180,7 +192,7 @@ const Orders = () => {
 
                                             {/* Cancel Button */}
                                             <button
-                                                onClick={() => handleCancelOrder(order._id, order.bookTitle)}
+                                                onClick={() => handleCancelOrder(order._id, bookTitle)}
                                                 className="btn btn-sm btn-circle btn-ghost text-error"
                                                 disabled={isFinal}
                                                 title="Cancel Order"

@@ -1,14 +1,15 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { FaShoppingCart, FaCalendarAlt, FaTimesCircle, FaMoneyBillWave, FaCheckCircle, FaTruck, FaBookOpen } from 'react-icons/fa';
 import toast from 'react-hot-toast'; 
 import useAuth from '../../../Hooks/useAuth';
 import Loading from '../../../Components/Logo/Loading/Loading';
+import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 
 const MyOrders = () => {
     const { user, loading } = useAuth();
     const queryClient = useQueryClient();
+    const axiosSecure = useAxiosSecure(); 
 
     const { 
         data: orders = [], 
@@ -18,25 +19,25 @@ const MyOrders = () => {
         queryKey: ['myOrders', user?.email],
         enabled: !!user?.email, 
         queryFn: async () => {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/my-orders/${user.email}`);
+            const res = await axiosSecure.get(`/my-orders/${user.email}`);
             return res.data;
         },
     });
 
     const cancelMutation = useMutation({
         mutationFn: async (orderId) => {
-            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/orders/cancel/${orderId}`);
+            const res = await axiosSecure.patch(`/orders/cancel/${orderId}`);
             return res.data;
         },
         onSuccess: () => {
             toast.success("Order cancelled successfully!");
-            queryClient.invalidateQueries(['myOrders', user?.email]); 
+            queryClient.invalidateQueries({ queryKey: ['myOrders', user?.email] }); 
         },
     });
 
     const payMutation = useMutation({
         mutationFn: async (orderData) => {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/create-checkout-session`, orderData);
+            const res = await axiosSecure.post(`/create-checkout-session`, orderData);
             return res.data;
         },
         onSuccess: (data) => {
@@ -44,6 +45,7 @@ const MyOrders = () => {
         },
     });
 
+    
     if (loading || isLoading) return <Loading />;
     if (isError || !user) return <h1 className="text-center text-red-600 text-3xl pt-20">Failed to load orders.</h1>;
 
@@ -70,7 +72,6 @@ const MyOrders = () => {
         });
     };
 
-    // 🎨 Updated badge colors for better visibility in Dark Mode
     const getStatusColor = (status) => {
         switch (status) {
             case 'pending': return 'badge-warning gap-2';
@@ -82,7 +83,6 @@ const MyOrders = () => {
     };
 
     return (
-        // 🎨 CHANGE: Use bg-base-200 and text-base-content
         <div className="p-4 sm:p-8 bg-base-200 min-h-screen text-base-content">
             <header className="text-center mb-10">
                 <h1 className="text-4xl font-extrabold flex items-center justify-center">
@@ -94,17 +94,14 @@ const MyOrders = () => {
             </header>
 
             {orders.length === 0 ? (
-                // 🎨 CHANGE: Card uses bg-base-100
                 <div className="text-center py-20 bg-base-100 rounded-xl shadow-lg mx-auto max-w-2xl border border-base-300">
                     <FaBookOpen className="mx-auto text-6xl opacity-20 mb-4" />
                     <h3 className="text-2xl font-semibold opacity-80">No Orders Placed Yet</h3>
                     <p className="opacity-60 mt-2">Start exploring our books to place your first order!</p>
                 </div>
             ) : (
-                // 🎨 CHANGE: Table container is base-100 with base-300 border
                 <div className="overflow-x-auto shadow-2xl rounded-xl border border-base-300 bg-base-100">
                     <table className="table w-full">
-                        {/* 🎨 CHANGE: Header uses base-300 for contrast */}
                         <thead className="bg-base-300 text-base-content">
                             <tr>
                                 <th className="bg-transparent">Book Title</th>
@@ -116,7 +113,6 @@ const MyOrders = () => {
                         </thead>
                         <tbody className="divide-y divide-base-300">
                             {orders.map(order => (
-                                // 🎨 CHANGE: hover effect uses base-200
                                 <tr key={order._id} className="hover:bg-base-200/50 transition-colors">
                                     
                                     <td>

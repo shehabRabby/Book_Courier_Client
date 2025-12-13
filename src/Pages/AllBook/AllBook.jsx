@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios"; 
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Loading from "../../Components/Logo/Loading/Loading";
 import { FaBookOpen, FaLayerGroup, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import SearchSection from "../../Components/AllBook/SearchSection";
 import FilteringByRating from "../../Components/AllBook/FilteringByRating";
 import LatestBookCard from "../../Components/Home/LatestBookCard";
+
+// 1. Import the useDebounce hook
+import useDebounce from "../../Hooks/useDebounce"; 
 
 const AllBook = () => {
     // Pagination States
@@ -13,9 +16,13 @@ const AllBook = () => {
     const [currentPage, setCurrentPage] = useState(0);
 
     // Filter States
+    // 2. State for the instant input value
     const [searchTerm, setSearchTerm] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
     const [filterRating, setFilterRating] = useState(0);
+
+    // 3. Debounce the searchTerm (500ms delay is standard)
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     // Fetching Data with Pagination and Filters
     const {
@@ -24,14 +31,15 @@ const AllBook = () => {
         isError,
         refetch
     } = useQuery({
-        // 🗝️ Crucial: include page and filters in the queryKey
-        queryKey: ["allBooks", currentPage, itemsPerPage, searchTerm, filterCategory, filterRating],
+        // 4. CRUCIAL: Use the DEBOUNCED value in the queryKey
+        queryKey: ["allBooks", currentPage, itemsPerPage, debouncedSearchTerm, filterCategory, filterRating],
         queryFn: async () => {
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/books`, {
                 params: {
                     page: currentPage,
                     size: itemsPerPage,
-                    search: searchTerm,
+                    // 5. Use the DEBOUNCED value in the API call
+                    search: debouncedSearchTerm, 
                     category: filterCategory,
                     rating: filterRating
                 }
@@ -43,12 +51,14 @@ const AllBook = () => {
     const books = bookData.result;
     const totalCount = bookData.count;
     const numberOfPages = Math.ceil(totalCount / itemsPerPage);
-    const pages = [...Array(numberOfPages).keys()]; // Creates array like [0, 1, 2...]
+    const pages = [...Array(numberOfPages).keys()];
 
-    // Reset to page 0 when filters change
+    // Reset to page 0 when filters change (now includes debouncedSearchTerm)
+    // Changing the dependency to debouncedSearchTerm ensures we only reset the page
+    // after the user has finished typing (500ms pause).
     useEffect(() => {
         setCurrentPage(0);
-    }, [searchTerm, filterCategory, filterRating, itemsPerPage]);
+    }, [debouncedSearchTerm, filterCategory, filterRating, itemsPerPage]);
 
     const handleReset = () => {
         setSearchTerm("");
@@ -57,6 +67,8 @@ const AllBook = () => {
         setCurrentPage(0);
     };
 
+    // The Loading component will now only show when the debouncedSearchTerm 
+    // changes and triggers a new API call via react-query.
     if (isLoading) return <Loading></Loading>;
     if (isError) return <h1 className="text-center text-red-500 pt-20">Error fetching books.</h1>;
 
@@ -79,7 +91,9 @@ const AllBook = () => {
                         <FaFilter className="mr-2 text-[#DE2A8A]" /> Filter & Search
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {/* 6. SearchSection uses the INSTANT searchTerm state */}
                         <SearchSection searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+                        
                         <FilteringByRating
                             filterCategory={filterCategory}
                             setFilterCategory={setFilterCategory}

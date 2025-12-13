@@ -1,47 +1,41 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import useAuth from "../Hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
 
 const useRole = () => {
   const { user, loading } = useAuth();
-  const [role, setRole] = useState(null);
-  const [isRoleLoading, setIsRoleLoading] = useState(true);
+  const axiosSecure = useAxiosSecure();
 
-  useEffect(() => {
-    if (user?.email) {
-      setIsRoleLoading(true);
+  const {
+    // 1. Set the default role to 'user' for safety and clarity
+    data: role = "user",
+    isLoading: isRoleLoading, // 2. Destructure the refetch function
+    refetch,
+  } = useQuery({
+    queryKey: ["userRole", user?.email], // Ensures query only runs if Firebase auth is done AND we have an email
 
-      user
-        .getIdToken()
-        .then((token) => {
-          axios
-            .get(`${import.meta.env.VITE_API_URL}/users/role/${user.email}`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-            .then((res) => {
-              setRole(res.data.role);
-            })
-            .catch((error) => {
-              console.error("Error fetching user role:", error);
-              setRole("user");
-            })
-            .finally(() => {
-              setIsRoleLoading(false);
-            });
-        })
-        .catch((tokenError) => {
-          console.error("Failed to retrieve ID Token:", tokenError);
-          setRole("user");
-          setIsRoleLoading(false);
-        });
-    } else if (!loading) {
-      setRole(null);
-      setIsRoleLoading(false);
-    }
-  }, [user, loading]);
-  return [role, isRoleLoading];
+    enabled: !loading && !!user?.email,
+
+    queryFn: async () => {
+      try {
+        // Backend endpoint is correct: /users/role/:email
+        const res = await axiosSecure.get(`/users/role/${user.email}`);
+        return res.data.role;
+      } catch (error) {
+        console.error(
+          "Error fetching user role from server (403 or 404 expected if no role):",
+          error
+        ); // Fallback to 'user' if the API fails or returns an error status
+        return "user";
+      }
+    }, // 3. IMPORTANT CHANGE: Removed initialData: "user". // The default role assignment (data: role = 'user') handles the initial value. // 4. Increased cache time to 15 minutes, as roles don't change often.
+    staleTime: 1000 * 60 * 15,
+  }); // Clean up the final return logic
+  if (loading) {
+    return ["user", true, refetch]; // Return 'user' as a safer default role
+  } // Return role, loading status, and the refetch function
+
+  return [role, isRoleLoading, refetch];
 };
 
 export default useRole;

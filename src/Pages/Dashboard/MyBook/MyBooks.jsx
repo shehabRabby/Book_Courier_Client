@@ -1,18 +1,22 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+// ❌ REMOVE: import axios from 'axios';
 import { FaEdit, FaEye, FaEyeSlash, FaBookOpen } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import useAuth from '../../../Hooks/useAuth';
 import Loading from '../../../Components/Logo/Loading/Loading';
 import toast from 'react-hot-toast';
+// 🚀 NEW IMPORT: Secure Axios
+import useAxiosSecure from '../../../Hooks/useAxiosSecure'; 
 
 const MyBooks = () => {
     const { user, loading: authLoading } = useAuth();
     const queryClient = useQueryClient();
     const accentColor = "#ff0077";
+    // 1. Instantiate the secure Axios instance
+    const axiosSecure = useAxiosSecure(); 
 
-    // 1. Fetch Books
+    // 1. Fetch Books (useQuery)
     const { 
         data: books = [], 
         isLoading 
@@ -21,20 +25,17 @@ const MyBooks = () => {
         enabled: !!user?.email,
         queryFn: async () => {
             if (!user?.email) return [];
-            const res = await axios.get(
-                `${import.meta.env.VITE_API_URL}/my-books/${user.email}`
-            );
+            // 2. FIX: Use axiosSecure for the GET request
+            const res = await axiosSecure.get(`/my-books/${user.email}`);
             return res.data;
         },
     });
 
-    // 2. Mutation for Publish/Unpublish
+    // 2. Mutation for Publish/Unpublish (useMutation)
     const statusMutation = useMutation({
         mutationFn: async ({ id, newStatus }) => {
-            const res = await axios.patch(
-                `${import.meta.env.VITE_API_URL}/books/status/${id}`, 
-                { status: newStatus }
-            );
+            // 3. FIX: Use axiosSecure for the PATCH request
+            const res = await axiosSecure.patch(`/books/status/${id}`, { status: newStatus });
             return res.data;
         },
         onSuccess: (data, variables) => {
@@ -55,7 +56,6 @@ const MyBooks = () => {
     if (authLoading || isLoading) return <Loading />;
 
     return (
-        // 🎨 CHANGE: bg-base-200 and text-base-content
         <div className="p-4 sm:p-8 bg-base-200 min-h-screen text-base-content">
             <header className="text-center mb-10">
                 <h1 className="text-4xl font-extrabold flex items-center justify-center">
@@ -68,7 +68,6 @@ const MyBooks = () => {
             </header>
 
             {books.length === 0 ? (
-                // 🎨 CHANGE: Empty state using base-100
                 <div className="text-center py-20 bg-base-100 rounded-3xl shadow-xl border border-base-300 mx-auto max-w-2xl">
                     <h3 className="text-2xl font-semibold opacity-80">
                         No Books Added Yet
@@ -78,10 +77,8 @@ const MyBooks = () => {
                     </p>
                 </div>
             ) : (
-                // 🎨 CHANGE: Table container background and border
                 <div className="overflow-x-auto shadow-2xl rounded-2xl border border-base-300 bg-base-100">
                     <table className="table w-full">
-                        {/* 🎨 CHANGE: Table Header with base-300 bg */}
                         <thead className="bg-base-300">
                             <tr className="text-base-content/70 uppercase text-xs">
                                 <th className="bg-transparent">Cover</th>
