@@ -28,7 +28,6 @@ const useAxiosSecure = () => {
             }
         );
 
-        // --- RESPONSE INTERCEPTOR (Handles 401/403 Errors) ---
         const responseInterceptor = axiosSecure.interceptors.response.use(
             (response) => {
                 return response;
@@ -45,7 +44,6 @@ const useAxiosSecure = () => {
             }
         );
 
-        // Cleanup: Remove interceptors when the component/hook unmounts
         return () => {
             axiosSecure.interceptors.request.eject(requestInterceptor);
             axiosSecure.interceptors.response.eject(responseInterceptor);

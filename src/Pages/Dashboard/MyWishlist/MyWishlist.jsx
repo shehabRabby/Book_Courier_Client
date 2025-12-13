@@ -1,12 +1,10 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import axios from "axios"; // ❌ Standard axios removed for secure operations
 import { Link } from "react-router-dom";
 import { FaTrash, FaEye, FaHeartBroken, FaBookOpen, FaStar } from "react-icons/fa";
 import useAuth from "../../../Hooks/useAuth";
 import Loading from "../../../Components/Logo/Loading/Loading";
 import toast from "react-hot-toast";
-// 🚀 Secure Axios instance
 import useAxiosSecure from "../../../Hooks/useAxiosSecure"; 
 
 const MyWishlist = () => {
@@ -14,31 +12,23 @@ const MyWishlist = () => {
     const queryClient = useQueryClient();
     const accentColor = "#ff0077";
     
-    // 1. Instantiate the secure Axios instance
     const axiosSecure = useAxiosSecure(); 
 
-    // --- Fetch Wishlist (useQuery) ---
     const { data: wishlist = [], isLoading } = useQuery({
         queryKey: ["wishlist", user?.email],
-        // Only run the query if the user email is available
         enabled: !!user?.email, 
         queryFn: async () => {
-            // 🔑 SECURITY FIX: Use axiosSecure for authenticated GET request
             const res = await axiosSecure.get(`/wishlist/${user?.email}`);
             return res.data;
         },
     });
 
-    // --- Remove Mutation (useMutation) ---
     const { mutateAsync: removeWish } = useMutation({
         mutationFn: async (id) => {
-            // 🔑 SECURITY FIX: Use axiosSecure for authenticated DELETE request
             await axiosSecure.delete(`/wishlist/${id}`);
         },
         onSuccess: () => {
-            // Success message for removing an item (Deletion Success)
             toast.success("Removed from wishlist"); 
-            // Invalidate query to trigger re-fetch and update UI
             queryClient.invalidateQueries({ queryKey: ["wishlist", user?.email] });
         },
         onError: (err) => {

@@ -1,5 +1,3 @@
-// src/Components/ThemeToggle/ThemeToggle.jsx
-
 import React from "react";
 
 import { FaSun, FaMoon } from "react-icons/fa";
@@ -14,7 +12,6 @@ const ThemeToggle = () => {
       className="btn btn-ghost btn-circle"
       aria-label="Toggle Theme"
     >
-      {/* Show Moon icon if currently Light, show Sun icon if currently Dark */}
       {theme === "light" ? (
         <FaMoon className="w-5 h-5" />
       ) : (

@@ -18,12 +18,10 @@ import {
 import { useForm } from "react-hook-form";
 import { imageUpload } from "../../../Utiles/index.js";
 import useAuth from "../../../Hooks/useAuth";
-// ❌ REMOVE: import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import Loading from "../../../Components/Logo/Loading/Loading.jsx";
 import ErrorPage from "../../ErrorPage/ErrorPage.jsx";
 import toast from "react-hot-toast";
-// 🚀 NEW IMPORT: Secure Axios
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const containerVariants = {

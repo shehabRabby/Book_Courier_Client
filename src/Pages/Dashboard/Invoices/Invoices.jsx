@@ -1,6 +1,5 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-// ❌ REMOVE: import axios from "axios";
 import {
     FaFileInvoiceDollar,
     FaCreditCard,
@@ -10,12 +9,10 @@ import {
 } from "react-icons/fa";
 import Loading from "../../../Components/Logo/Loading/Loading";
 import useAuth from "../../../Hooks/useAuth";
-// 🚀 NEW IMPORT: Secure Axios
 import useAxiosSecure from "../../../Hooks/useAxiosSecure"; 
 
 const Invoices = () => {
     const { user, loading: authLoading } = useAuth();
-    // 1. Instantiate the secure Axios instance
     const axiosSecure = useAxiosSecure(); 
 
     const {
@@ -26,8 +23,6 @@ const Invoices = () => {
         queryKey: ["myInvoices", user?.email],
         enabled: !!user?.email,
         queryFn: async () => {
-            // 2. FIX: Use axiosSecure for the GET request
-            // We also remove the hardcoded base URL, as axiosSecure handles it.
             const res = await axiosSecure.get(`/my-invoices/${user.email}`);
             return res.data;
         },

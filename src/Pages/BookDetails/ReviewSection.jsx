@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// ❌ REMOVE: import axios from 'axios';
 import { FaStar, FaUser, FaRegCommentDots } from 'react-icons/fa';
 import Swal from 'sweetalert2';
-// 🚀 NEW IMPORT: Secure Axios Hook
 import useAxiosSecure from '../../Hooks/useAxiosSecure'; 
 
-// Star Rating Component (Unchanged)
 const StarRating = ({ rating, setRating }) => {
     return (
         <div className="flex justify-start items-center">
@@ -29,42 +26,29 @@ const StarRating = ({ rating, setRating }) => {
 // Main Review Section Component
 const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
     const queryClient = useQueryClient();
-    // 1. Instantiate secure Axios
     const axiosSecure = useAxiosSecure(); 
-    // NOTE: We no longer need API_BASE_URL if axiosSecure handles the base URL.
-    // const API_BASE_URL = import.meta.env.VITE_API_URL; 
-
     const [rating, setRating] = useState(0);
     const [reviewText, setReviewText] = useState('');
 
-    // --- QUERY 1: Check Review Eligibility (REQUIRES AUTH) ---
     const { data: eligibility = {}, isLoading: isLoadingEligibility } = useQuery({
         queryKey: ['reviewEligibility', bookId, userEmail],
         enabled: !!userEmail && !!bookId,
         queryFn: async () => {
             if (!userEmail) return { canReview: false };
-            // 🔑 SECURITY FIX: Use axiosSecure for eligibility check
             const res = await axiosSecure.get(`/user-can-review/${bookId}/${userEmail}`); 
             return res.data;
         },
     });
 
-    // --- QUERY 2: Fetch All Reviews (Public, standard Axios is okay, but using secure is fine too) ---
     const { data: reviews = [], isLoading: isLoadingReviews } = useQuery({
         queryKey: ['bookReviews', bookId],
         queryFn: async () => {
-            // We keep this using standard fetch/axios if reviews are public and need no auth. 
-            // If the base URL is handled by axiosSecure, we must use it. Assuming API_BASE_URL is still needed 
-            // if you don't use axiosSecure for public endpoints, but let's assume it should be authenticated 
-            // like everything else for consistency.
             const res = await axiosSecure.get(`/reviews/${bookId}`); 
             return res.data;
         },
     });
 
-    // --- MUTATION: Submit Review (REQUIRES AUTH) ---
     const reviewMutation = useMutation({
-        // 🔑 SECURITY FIX: Use axiosSecure for review submission
         mutationFn: (newReview) => axiosSecure.post(`/reviews`, newReview), 
         onSuccess: (response) => {
             Swal.fire('Success!', 'Your review has been submitted successfully.', 'success');
@@ -72,15 +56,13 @@ const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
             // Invalidate and refetch queries
             queryClient.invalidateQueries(['bookReviews', bookId]);
             queryClient.invalidateQueries(['reviewEligibility', bookId, userEmail]);
-            refetchBook(); // Refresh the main book details to show the new rating
+            refetchBook(); 
             
-            // Clear form
             setRating(0);
             setReviewText('');
         },
         onError: (error) => {
             console.error("Review submission failed:", error);
-            // Provide a clearer error if it's an authorization issue
             const errorMessage = (error.response?.status === 401 || error.response?.status === 403) 
                 ? "Authorization failed. Please log in again." 
                 : 'Failed to submit review. Please try again.';
@@ -101,14 +83,13 @@ const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
             userName: userName,
             rating: rating,
             reviewText: reviewText,
-            createdAt: new Date().toISOString(), // Add timestamp for sorting/display
+            createdAt: new Date().toISOString(), 
         };
         
         reviewMutation.mutate(newReview);
     };
 
     const renderReviewForm = () => {
-        // ... (rest of renderReviewForm is unchanged)
         if (!userEmail) {
             return (
                 <div className="bg-blue-100 p-4 rounded-lg text-blue-800 border-l-4 border-blue-500">

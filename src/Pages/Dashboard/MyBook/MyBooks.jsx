@@ -1,22 +1,18 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-// ❌ REMOVE: import axios from 'axios';
 import { FaEdit, FaEye, FaEyeSlash, FaBookOpen } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import useAuth from '../../../Hooks/useAuth';
 import Loading from '../../../Components/Logo/Loading/Loading';
 import toast from 'react-hot-toast';
-// 🚀 NEW IMPORT: Secure Axios
 import useAxiosSecure from '../../../Hooks/useAxiosSecure'; 
 
 const MyBooks = () => {
     const { user, loading: authLoading } = useAuth();
     const queryClient = useQueryClient();
     const accentColor = "#ff0077";
-    // 1. Instantiate the secure Axios instance
     const axiosSecure = useAxiosSecure(); 
 
-    // 1. Fetch Books (useQuery)
     const { 
         data: books = [], 
         isLoading 
@@ -25,16 +21,13 @@ const MyBooks = () => {
         enabled: !!user?.email,
         queryFn: async () => {
             if (!user?.email) return [];
-            // 2. FIX: Use axiosSecure for the GET request
             const res = await axiosSecure.get(`/my-books/${user.email}`);
             return res.data;
         },
     });
 
-    // 2. Mutation for Publish/Unpublish (useMutation)
     const statusMutation = useMutation({
         mutationFn: async ({ id, newStatus }) => {
-            // 3. FIX: Use axiosSecure for the PATCH request
             const res = await axiosSecure.patch(`/books/status/${id}`, { status: newStatus });
             return res.data;
         },

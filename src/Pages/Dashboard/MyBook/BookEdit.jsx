@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// ❌ REMOVE: import axios from "axios";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useAuth from "../../../Hooks/useAuth";
@@ -16,7 +15,6 @@ import {
     FaAlignLeft,
 } from "react-icons/fa";
 import { imageUpload } from "../../../Utiles/index.js";
-// 🚀 NEW IMPORT: Secure Axios
 import useAxiosSecure from "../../../Hooks/useAxiosSecure"; 
 
 const BookEdit = () => {

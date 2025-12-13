@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useOutletContext } from "react-router-dom"; // Updated to react-router-dom
-import toast, { Toaster } from "react-hot-toast";
+import { useOutletContext } from "react-router-dom"; 
 import {
   FaUserCircle,
   FaEnvelope,
@@ -51,12 +50,8 @@ const MyProfile = () => {
       <h2 className="text-4xl font-extrabold text-[#ff0077] mb-8 border-b-4 border-[#ff0077]/50 pb-3 flex items-center">
         <FaUserCircle className="mr-3 text-3xl" /> My Profile
       </h2>
-
-      {/* 🎨 CHANGE: bg-base-100 for theme compatibility */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-base-100 p-8 rounded-2xl shadow-2xl border border-base-300">
         
-        {/* Current Profile Info Card (Left) */}
-        {/* 🎨 CHANGE: bg-base-200 creates a subtle contrast in both light/dark */}
         <div className="lg:col-span-1 flex flex-col items-center p-6 bg-base-200 rounded-xl border border-base-300 transition-all duration-500 hover:shadow-lg">
           <img
             src={imageURL || "https://via.placeholder.com/150/ff0077/ffffff?text=User"}
@@ -88,7 +83,6 @@ const MyProfile = () => {
 
           <form onSubmit={handleUpdateProfile} className="space-y-6">
             
-            {/* Name Input Group */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text font-bold text-base-content">Display Name</span>
@@ -97,7 +91,6 @@ const MyProfile = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                // 🎨 CHANGE: Used DaisyUI input classes for perfect dark mode support
                 className="input input-bordered w-full bg-base-100 focus:border-[#ff0077] transition-all duration-300"
                 placeholder="Enter new display name"
                 required

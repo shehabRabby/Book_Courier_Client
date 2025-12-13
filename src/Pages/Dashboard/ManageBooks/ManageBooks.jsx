@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from "react";
-// ❌ REMOVE: import axios from "axios";
 import Swal from "sweetalert2";
 import { FaTrash, FaEye, FaEyeSlash, FaEdit, FaShieldAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
-// 🚀 NEW IMPORT: Secure Axios Hook
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 
 const ManageBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const accentColor = "#ff0077"; // Consistent brand accent
-
-    // 1. Instantiate the secure Axios instance
+  const accentColor = "#ff0077"; 
     const axiosSecure = useAxiosSecure();
 
-    // ❌ REMOVE: API_BASE_URL is no longer needed since axiosSecure handles the base URL.
-    // const API_BASE_URL = import.meta.env.VITE_API_URL;
-
-  // Helper for SweetAlert Theme Support
   const swalConfig = {
     background: 'var(--fallback-b1,oklch(var(--b1)))',
     color: 'var(--fallback-bc,oklch(var(--bc)))',
@@ -116,7 +108,6 @@ const ManageBooks = () => {
   }
 
   return (
-    // 🎨 CHANGE: Theme-aware background and text
     <div className="p-4 md:p-8 bg-base-200 min-h-screen text-base-content">
       <header className="mb-10 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>

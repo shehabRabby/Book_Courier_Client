@@ -10,7 +10,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 import useAuth from "../../Hooks/useAuth";
-// 🚀 NEW IMPORT: Secure Axios Hook
 import useAxiosSecure from "../../Hooks/useAxiosSecure"; 
 import OrderNowModal from "./OrderNowModal";
 import ReviewSection from "./ReviewSection";
@@ -18,7 +17,6 @@ import Loading from "../../Components/Logo/Loading/Loading";
 
 const ACCENT_COLOR = "#ff0077";
 
-// --- Metadata Fact Card (Glass Effect) ---
 const DetailFactCard = ({ icon: Icon, title, value, colorClass, delay }) => (
   <div
     className={`group p-4 bg-base-100 border border-base-300 rounded-2xl shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 animate-fadeInUp`}
@@ -39,8 +37,6 @@ const BookDetails = () => {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
-    
-    // 1. Instantiate the secure Axios instance
     const axiosSecure = useAxiosSecure(); 
 
   const { data: book = {}, isLoading, isError, refetch } = useQuery({
@@ -62,14 +58,11 @@ const BookDetails = () => {
       if (!user) throw new Error("Authentication Required");
       const wishlistData = { bookId: _id, bookTitle, authorName, photo, price, category, rating, userEmail: user?.email };
         
-        // 2. FIX: Use axiosSecure for the POST request requiring authentication (JWT)
         return await axiosSecure.post(`/wishlist`, wishlistData);
     },
     onSuccess: () => toast.success("Added to your wishlist!"),
     onError: (err) => {
-        // Log the full error to console for debugging
         console.error("Wishlist addition failed:", err);
-        // Display a more helpful user error if status is 401/403 (handled by useAxiosSecure interceptor, but good practice)
         if (err.response?.status === 401 || err.response?.status === 403) {
              toast.error("Please log in again to add items to your wishlist.");
         } else {
@@ -84,7 +77,6 @@ const BookDetails = () => {
   return (
     <div className="min-h-screen bg-base-200 py-12 px-4 sm:px-8">
       
-      {/* --- Navigation & Header --- */}
       <div className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
         <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2 opacity-60 hover:opacity-100">
           <FaChevronLeft /> Back to Library
@@ -97,7 +89,6 @@ const BookDetails = () => {
 
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
         
-        {/* --- Left Column: Visuals --- */}
         <div className="lg:col-span-4 space-y-6">
           <div className="sticky top-10">
             <div className="relative group overflow-hidden rounded-[2rem] shadow-2xl border-4 border-base-100">
@@ -134,7 +125,6 @@ const BookDetails = () => {
           </div>
         </div>
 
-        {/* --- Right Column: Intelligence & Data --- */}
         <div className="lg:col-span-8 space-y-10">
           <section className="animate-fadeInUp">
             <div className="flex items-center gap-3 mb-4">
@@ -148,7 +138,6 @@ const BookDetails = () => {
             </div>
           </section>
 
-          {/* Metadata Pulse Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <DetailFactCard icon={FaStar} title="System Rating" value={`${rating} / 5`} colorClass="text-yellow-500" delay={100} />
             <DetailFactCard icon={FaCheckCircle} title="Registry Status" value={status} colorClass="text-success" delay={200} />
@@ -156,7 +145,6 @@ const BookDetails = () => {
             <DetailFactCard icon={FaGlobe} title="Language" value={language} colorClass="text-secondary" delay={400} />
           </div>
 
-          {/* Description Section */}
           <section className="bg-base-100 p-8 rounded-3xl border border-base-300">
             <h3 className="flex items-center text-xl font-black mb-6 gap-3">
               <FaInfoCircle className="opacity-20" /> Narrative Overview
@@ -166,7 +154,6 @@ const BookDetails = () => {
             </p>
           </section>
 
-          {/* Technical Specs */}
           
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center p-6 bg-base-300 rounded-2xl gap-4">
@@ -185,7 +172,6 @@ const BookDetails = () => {
             </div>
           </section>
 
-          {/* Community Feedback */}
           <div className="pt-10 border-t border-base-300">
              <ReviewSection 
                 bookId={_id} 

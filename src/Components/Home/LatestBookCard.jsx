@@ -12,10 +12,8 @@ const LatestBookCard = ({ book }) => {
     isRatingHighlighted,
   } = book;
 
-  // --- Brand Design Tokens ---
-  const ACCENT_COLOR = "#ff0077"; // Electric Pink
+  const ACCENT_COLOR = "#ff0077"; 
   
-  // Highlight logic: Creates a premium "Featured" look for top-rated books
   const highlightStyles = isRatingHighlighted
     ? {
         border: `2px solid ${ACCENT_COLOR}`,
@@ -28,7 +26,6 @@ const LatestBookCard = ({ book }) => {
       style={highlightStyles}
       className={`group relative bg-base-100 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-base-300 ${isRatingHighlighted ? 'ring-1 ring-offset-2 ring-pink-500/20' : ''}`}
     >
-      {/* Featured Badge for Highlighted Books */}
       {isRatingHighlighted && (
         <div className="absolute top-3 right-3 z-20">
           <span className="badge badge-secondary badge-sm font-bold shadow-md animate-pulse">
