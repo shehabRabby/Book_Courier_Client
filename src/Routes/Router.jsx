@@ -48,7 +48,6 @@ export const router = createBrowserRouter([
         Component: BookDetails,
       },
       {
-        // Payment is a standard private route (User only)
         path: "/payment/:orderId",
         element: (
           <PrivateRoute>
