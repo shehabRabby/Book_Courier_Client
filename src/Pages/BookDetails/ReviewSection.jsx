@@ -164,7 +164,7 @@ const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
         return (
             <div className="space-y-6">
                 {reviews.map((review, index) => (
-                    <div key={index} className="p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    <div key={index} className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center">
                                 <FaUser className="mr-2 text-gray-500" />
