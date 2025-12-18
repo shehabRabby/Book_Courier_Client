@@ -157,14 +157,14 @@ const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
 
         if (reviews.length === 0) {
             return (
-                <p className="text-center text-gray-500 py-4">No reviews yet. Be the first to review!</p>
+                <p className="text-center text-gray-500 py-4">No reviews yet. Be the first to review!!</p>
             );
         }
 
         return (
             <div className="space-y-6">
                 {reviews.map((review, index) => (
-                    <div key={index} className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
+                    <div key={index} className="p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center">
                                 <FaUser className="mr-2 text-gray-500" />
@@ -175,7 +175,7 @@ const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
                                     <FaStar
                                         key={i}
                                         className={`text-lg ${
-                                            i < review.rating ? 'text-yellow-500' : 'text-gray-300'
+                                            i < review.rating ? 'text-yellow-500' : 'text-gray-100'
                                         }`}
                                     />
                                 ))}
