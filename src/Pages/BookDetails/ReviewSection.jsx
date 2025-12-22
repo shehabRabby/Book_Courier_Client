@@ -122,7 +122,7 @@ const ReviewSection = ({ bookId, userEmail, userName, refetchBook }) => {
         return (
             <form onSubmit={handleSubmitReview} className="space-y-4">
                 <h4 className="text-2xl font-semibold text-gray-800 flex items-center">
-                    <FaStar className="mr-2 text-yellow-500" /> Write Your Review
+                    <FaStar className="mr-2 text-yellow-500" /> Share Your Review
                 </h4>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <p className="font-medium text-gray-700">Your Rating:</p>
