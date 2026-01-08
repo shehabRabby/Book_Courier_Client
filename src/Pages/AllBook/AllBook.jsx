@@ -72,7 +72,7 @@ const AllBook = () => {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <AllBookAnimation></AllBookAnimation>
+        <AllBookAnimation />
       <section className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <p className="text-sm font-semibold tracking-wide uppercase flex items-center justify-center text-base-content opacity-70">
