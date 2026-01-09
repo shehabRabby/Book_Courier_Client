@@ -2,19 +2,24 @@
 
 /* 1. Register DaisyUI Plugin */
 @plugin "daisyui" {
-  themes: light, dark; /* Corrected "tmemes" typo */
+  themes: light, dark; 
 }
 
 /* 2. Configure Custom Theme Variables */
 @theme {
-  /* Brand Colors */
-  --color-brand-pink: #ff0077;
-  --color-brand-blue: #2563eb;
+  /* Brand Colors - Shifted to Professional Indigo & Teal */
+  --color-primary-main: #4f46e5;    /* Indigo 600 */
+  --color-primary-dark: #3730a3;    /* Indigo 800 */
+  --color-secondary-main: #0d9488;  /* Teal 600 */
+  --color-accent-main: #f59e0b;     /* Amber for Star Ratings/Alerts */
   
+  /* Neutral Palette for Clean UI */
+  --color-slate-50: #f8fafc;
+  --color-slate-900: #0f172a;
+
   /* Custom Animations */
   --animate-fade-in: fadeIn 0.5s ease-out;
   --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-  --animate-terminal-pop: terminalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -25,37 +30,48 @@
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  @keyframes terminalPop {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
 }
 
 /* 3. DaisyUI Theme Customization */
-@plugin "daisyui/theme" {
-  name: "light";
-  default: true;
-  --color-primary: var(--color-brand-blue);
-  --color-secondary: var(--color-brand-pink);
-  --color-accent: #DE2A8A;
+[data-theme="light"] {
+  --color-primary: #4f46e5;
+  --color-secondary: #0d9488;
+  --color-accent: #f59e0b;
+  --bg-base-100: #f8fafc; /* Subtle off-white background */
+  --base-content: #1e293b; /* Dark slate text */
+}
+
+[data-theme="dark"] {
+  --color-primary: #818cf8; /* Lighter indigo for dark mode */
+  --color-secondary: #2dd4bf;
+  --bg-base-100: #0f172a; /* Deep navy background */
+  --bg-base-200: #1e293b; /* Slightly lighter for cards */
+  --base-content: #f1f5f9; /* Light gray text */
 }
 
 /* 4. Global Typography & Base Styles */
 @layer base {
   body {
-    @apply font-sans antialiased bg-base-100 text-base-content;
-    font-family: "Inter", "Urbanist", sans-serif;
+    @apply font-sans antialiased;
+    /* Clean, high-end font stack */
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--base-content);
+    background-color: var(--bg-base-100);
   }
 
-  /* Custom Scrollbar for Dashboard feel */
+  /* Professional Heading Styles */
+  h1, h2, h3, h4 {
+    @apply font-bold tracking-tight text-slate-900 dark:text-slate-50;
+  }
+
+  /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-base-200;
+    @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-base-content/20 rounded-full hover:bg-brand-pink;
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-primary-main;
   }
 }

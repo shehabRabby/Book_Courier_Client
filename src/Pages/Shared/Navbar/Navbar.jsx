@@ -22,11 +22,12 @@ const Navbar = () => {
       <li>
         <NavLink
           to="/"
-          // Use theme-aware classes for NavLink text
           className={({ isActive }) =>
-            isActive
-              ? "text-primary font-bold"
-              : "text-base-content hover:text-primary"
+            `px-4 py-2 rounded-md transition-all duration-300 ${
+              isActive
+                ? "text-primary font-bold bg-primary/10"
+                : "text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5"
+            }`
           }
         >
           Home
@@ -36,9 +37,11 @@ const Navbar = () => {
         <NavLink
           to="/all-books"
           className={({ isActive }) =>
-            isActive
-              ? "text-primary font-bold"
-              : "text-base-content hover:text-primary"
+            `px-4 py-2 rounded-md transition-all duration-300 ${
+              isActive
+                ? "text-primary font-bold bg-primary/10"
+                : "text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5"
+            }`
           }
         >
           Books
@@ -48,82 +51,86 @@ const Navbar = () => {
         <NavLink
           to="/about-us"
           className={({ isActive }) =>
-            isActive
-              ? "text-primary font-bold"
-              : "text-base-content hover:text-primary"
+            `px-4 py-2 rounded-md transition-all duration-300 ${
+              isActive
+                ? "text-primary font-bold bg-primary/10"
+                : "text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5"
+            }`
           }
         >
           About Us
         </NavLink>
       </li>
       {user && (
-        <>
-          <li>
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) =>
+        <li>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `px-4 py-2 rounded-md transition-all duration-300 ${
                 isActive
-                  ? "text-primary font-bold"
-                  : "text-base-content hover:text-primary"
-              }
-            >
-              Dashboard
-            </NavLink>
-          </li>
-        </>
+                  ? "text-primary font-bold bg-primary/10"
+                  : "text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5"
+              }`
+            }
+          >
+            Dashboard
+          </NavLink>
+        </li>
       )}
     </>
   );
 
   return (
-    // 🎨 CHANGE 1: Use bg-base-100 for background and text-base-content for default text color
-    <div className="navbar shadow-md bg-base-100 text-base-content">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <div className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-base-100/80 backdrop-blur-md">
+      <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="navbar-start">
+          <div className="dropdown">
+            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden text-slate-600 dark:text-slate-300">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+              </svg>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-xl z-[1] mt-3 w-52 p-4 shadow-xl border border-slate-200 dark:border-slate-700 gap-2"
             >
-              {" "}
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />{" "}
-            </svg>
+              {links}
+            </ul>
           </div>
-          <ul
-            tabIndex="-1"
-            // 🎨 CHANGE 2: Ensure dropdown background uses theme color
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-          >
+          <Logo />
+        </div>
+
+        <div className="navbar-center hidden lg:flex">
+          <ul className="flex items-center gap-2 px-1">
             {links}
           </ul>
         </div>
-        <Logo></Logo>
-      </div>
 
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">{links}</ul>
-      </div>
+        <div className="navbar-end gap-4">
+          <ThemeToggle />
 
-      <div className="navbar-end">
-        <ThemeToggle></ThemeToggle>
-
-        {user ? (
-          <a onClick={handleLogOut} className="btn btn-secondary">
-            Log Out
-          </a>
-        ) : (
-          <Link to="/login" className="btn btn-secondary">
-            Login
-          </Link>
-        )}
+          {user ? (
+            <button 
+              onClick={handleLogOut} 
+              className="btn btn-primary btn-md px-6 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
+            >
+              Log Out
+            </button>
+          ) : (
+            <Link 
+              to="/login" 
+              className="btn btn-primary btn-md px-6 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
+            >
+              Login
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
-import { motion, AnimatePresence } from "framer-motion"; // Added Framer Motion
+import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowRight, FaBolt, FaGlobe, FaHandsHelping, FaCrown } from "react-icons/fa";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
@@ -10,7 +10,9 @@ import banner2 from "../../../assets/banner5.jpg";
 import banner3 from "../../../assets/banner6.jpg";
 import banner4 from "../../../assets/banner7.jpg";
 
-const ACCENT_COLOR = "#ff0077";
+// 🎨 THEME ADJUSTMENT: Using our professional Indigo Primary
+const ACCENT_COLOR = "#4F46E5"; 
+const SECONDARY_ACCENT = "#10B981"; // Emerald for icons/highlights
 
 const sliderData = [
   {
@@ -54,22 +56,21 @@ const sliderData = [
 const Banner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Animation settings for the text entrance
   const textRevealVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i) => ({
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.15, // Staggers the entrance of each element
+        delay: i * 0.15,
         duration: 0.8,
-        ease: [0.215, 0.61, 0.355, 1], // Smooth professional easing
+        ease: [0.215, 0.61, 0.355, 1],
       },
     }),
   };
 
   return (
-    <section className="relative overflow-hidden bg-black">
+    <section className="relative overflow-hidden bg-slate-950">
       <Carousel 
         autoPlay={true} 
         infiniteLoop={true} 
@@ -78,45 +79,44 @@ const Banner = () => {
         interval={6000} 
         transitionTime={700}
         stopOnHover={false}
-        onChange={(index) => setCurrentIndex(index)} // Track index for animation trigger
+        onChange={(index) => setCurrentIndex(index)}
         className="main-banner-carousel"
       >
         {sliderData.map((slide, index) => (
-          <div key={index} className="relative h-[60vh]">
+          <div key={index} className="relative h-[60vh] md:h-[70vh]">
             
-            {/* --- Background Asset --- */}
             <img 
               src={slide.image} 
               alt={slide.title}
               className="w-full h-full object-cover scale-105 animate-slowZoom" 
             />
             
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            {/* 🎨 DARK OVERLAYS: Using Slate-950 for a more premium look than pure black */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
-            {/* --- Content Hub --- */}
             <div className={`absolute inset-0 flex flex-col justify-center px-6 md:px-20 lg:px-32 z-20
                 ${slide.alignment === 'left' ? 'items-start text-left' : ''}
                 ${slide.alignment === 'center' ? 'items-center text-center' : ''}
                 ${slide.alignment === 'right' ? 'items-end text-right' : ''}
             `}>
               
-              {/* This AnimatePresence ensures text re-animates on slide change */}
               <AnimatePresence mode="wait">
                 {currentIndex === index && (
                   <motion.div 
                     key={index}
                     initial="hidden"
                     animate="visible"
-                    className="max-w-3xl space-y-6"
+                    className="max-w-4xl space-y-6"
                   >
                     {/* Status Tag */}
                     <motion.div 
                       custom={0} variants={textRevealVariants}
-                      className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full mb-4"
+                      className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full mb-4"
                     >
-                      <span className="text-[#ff0077]">{slide.icon}</span>
-                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">
+                      {/* 🎨 ICON COLOR: Emerald for a fresh professional look */}
+                      <span className="text-emerald-400 text-lg">{slide.icon}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-100">
                         {slide.tag}
                       </span>
                     </motion.div>
@@ -124,10 +124,10 @@ const Banner = () => {
                     {/* Title */}
                     <motion.h2 
                       custom={1} variants={textRevealVariants}
-                      className="text-4xl md:text-7xl font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl"
+                      className="text-4xl md:text-7xl font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-2xl"
                     >
                       {slide.title.split(':').map((part, i) => (
-                        <span key={i} className={i === 1 ? "text-[#ff0077] block" : "block"}>
+                        <span key={i} className={i === 1 ? "text-indigo-400 block" : "block"}>
                           {part}
                         </span>
                       ))}
@@ -136,7 +136,7 @@ const Banner = () => {
                     {/* Description */}
                     <motion.p 
                       custom={2} variants={textRevealVariants}
-                      className="text-lg md:text-xl font-medium text-white/70 max-w-2xl leading-relaxed"
+                      className="text-lg md:text-xl font-medium text-slate-300 max-w-2xl leading-relaxed"
                     >
                       {slide.description}
                     </motion.p>
@@ -145,7 +145,7 @@ const Banner = () => {
                     <motion.div custom={3} variants={textRevealVariants} className="pt-6">
                       <a 
                         href="/all-books" 
-                        className="btn btn-lg border-none text-white px-10 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-2xl hover:scale-105 transition-all group inline-flex items-center"
+                        className="btn btn-lg border-none text-white px-10 rounded-xl font-bold text-sm uppercase tracking-wider shadow-xl hover:translate-y-[-4px] transition-all group inline-flex items-center"
                         style={{ backgroundColor: ACCENT_COLOR }}
                       >
                         {slide.linkText}
@@ -158,9 +158,9 @@ const Banner = () => {
             </div>
 
             {/* Slide Index Visualizer */}
-            <div className="absolute bottom-10 left-10 md:left-20 flex gap-2 z-30">
+            <div className="absolute bottom-10 left-10 md:left-20 flex gap-3 z-30">
                 {sliderData.map((_, i) => (
-                    <div key={i} className={`h-1 transition-all duration-500 rounded-full ${index === i ? 'w-12 bg-[#ff0077]' : 'w-4 bg-white/20'}`} />
+                    <div key={i} className={`h-1.5 transition-all duration-500 rounded-full ${currentIndex === i ? 'w-16 bg-indigo-500' : 'w-6 bg-white/30'}`} />
                 ))}
             </div>
 
@@ -171,10 +171,10 @@ const Banner = () => {
       <style>{`
         @keyframes slowZoom {
           from { transform: scale(1); }
-          to { transform: scale(1.15); }
+          to { transform: scale(1.1); }
         }
         .animate-slowZoom {
-          animation: slowZoom 10s infinite alternate ease-in-out;
+          animation: slowZoom 12s infinite alternate ease-in-out;
         }
         .main-banner-carousel .control-dots {
           display: none !important;

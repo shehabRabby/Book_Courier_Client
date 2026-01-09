@@ -18,7 +18,7 @@ const RootLayout = () => {
           <Navbar />
         </div>
       </header>
-      <main className="flex-grow w-full max-w-7xl mx-auto py-8">
+      <main className="flex-grow w-full max-w-7xl mx-auto">
         <div
           key={pathname}
           className="animate-in fade-in slide-in-from-bottom-2 duration-500"
