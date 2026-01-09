@@ -1,5 +1,4 @@
 import React from "react";
-
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useTheme } from "../../Context/AuthContext/ThemeContext";
 
@@ -13,9 +12,9 @@ const ThemeToggle = () => {
       aria-label="Toggle Theme"
     >
       {theme === "light" ? (
-        <FaMoon className="w-5 h-5" />
+        <FaMoon className="w-5 h-5 text-sky-600" />
       ) : (
-        <FaSun className="w-5 h-5 text-yellow-500" />
+        <FaSun className="w-5 h-5 text-indigo-400" />
       )}
     </button>
   );

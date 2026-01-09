@@ -14,14 +14,14 @@ const Logo = () => {
 
         {/* 🎨 Updated Notification Dot to Emerald (Accent) */}
         <span className="absolute -top-1 -right-1 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
         </span>
       </div>
 
       <div className="flex flex-col leading-tight">
         {/* 🎨 Text colors fixed for Light/Dark mode compatibility */}
-        <h1 className="text-2xl font-extrabold tracking-tighter text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-extrabold tracking-tighter text-indigo-500/90 ">
           Book<span className="text-primary">Courier</span>
         </h1>
         {/* 🎨 More readable secondary text */}

@@ -8,6 +8,7 @@ import {
   FaUserEdit,
 } from "react-icons/fa";
 import { AuthContext } from "../../../../Context/AuthContext/AuthContext";
+import toast, { Toaster } from "react-hot-toast";
 
 const MyProfile = () => {
   const { user } = useOutletContext();

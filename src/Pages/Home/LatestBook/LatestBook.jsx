@@ -9,9 +9,9 @@ import { Link } from "react-router-dom";
 
 const LatestBook = () => {
   // --- Master Brand Tokens ---
-  const ACCENT_TEXT = "text-[#ff0077]";
-  const ACCENT_BG = "bg-[#ff0077]";
-  const ACCENT_HOVER = "hover:bg-[#ff0071] hover:shadow-pink-500/30";
+const ACCENT_TEXT = "text-primary"; // Indigo-600 from your theme
+const ACCENT_BG = "bg-primary";
+const ACCENT_HOVER = "hover:bg-primary-dark hover:shadow-indigo-500/30";
 
   const {
     data: latestBooks = [],
@@ -41,58 +41,52 @@ const LatestBook = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-base-200 border-t border-base-300">
-      <div className="max-w-[1600px] mx-auto">
-        
-        {/* --- Header Section --- */}
-        <div className="text-center mb-16">
-          <div className={`inline-flex items-center justify-center space-x-2 px-4 py-1.5 rounded-full bg-base-100 border border-base-300 shadow-sm mb-6`}>
-            <FaClock className={`${ACCENT_TEXT} animate-pulse text-xs`} />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">
-              Live Catalog Feed
-            </span>
-          </div>
+<section className="py-24 px-4 sm:px-6 lg:px-8 bg-base-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+  <div className="max-w-[1600px] mx-auto">
+    
+    {/* --- Header Section --- */}
+    <div className="text-center mb-16">
 
-          <h2 className="text-4xl md:text-6xl font-black text-base-content tracking-tight">
-            Latest <span className={ACCENT_TEXT}>Acquisitions</span>
+
+     <h2 className="text-4xl md:text-6xl font-extrabold text-primary dark:text-primary tracking-tight">
+            Latest <span className="text-primary dark:text-primary">Books</span>
           </h2>
-          
-          <p className="mt-6 max-w-2xl mx-auto text-lg text-base-content opacity-60 leading-relaxed">
-            Automatic synchronization with our partner libraries brings you the 
-            most recent literature as soon as it enters the system.
-          </p>
-        </div>
+      
+      <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+        Automatic synchronization with our partner libraries brings you the 
+        most recent literature as soon as it enters the system.
+      </p>
+    </div>
 
-        {/* --- Responsive Grid Layout --- */}
-        {/*  */}
-        {latestBooks.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
-            {latestBooks.slice(0, 10).map((book) => (
-              <LatestBookCard key={book._id} book={book} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 bg-base-100 rounded-3xl border-2 border-dashed border-base-300">
-            <FaBookReader className="mx-auto text-5xl opacity-10 mb-4" />
-            <p className="text-xl font-bold opacity-30">No new entries detected this week.</p>
-          </div>
-        )}
-
-        {/* --- Footer / Navigation --- */}
-        <div className="mt-16 text-center">
-          <Link
-            to="/all-books"
-            className={`group inline-flex items-center px-10 py-4 ${ACCENT_BG} text-white font-black text-sm uppercase tracking-widest rounded-full transition-all duration-300 transform hover:scale-105 ${ACCENT_HOVER} shadow-xl`}
-          >
-            Access Full Archive
-            <FaArrowRight className="ml-3 transition-transform group-hover:translate-x-2" />
-          </Link>
-          <p className="mt-4 text-[10px] font-bold opacity-30 uppercase tracking-tighter">
-            Authorized Users Only • {latestBooks.length} Items Listed
-          </p>
-        </div>
+    {/* --- Responsive Grid Layout --- */}
+    {latestBooks.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+        {latestBooks.slice(0, 10).map((book) => (
+          <LatestBookCard key={book._id} book={book} />
+        ))}
       </div>
-    </section>
+    ) : (
+      <div className="text-center py-20 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+        <FaBookReader className="mx-auto text-5xl text-slate-300 dark:text-slate-700 mb-4" />
+        <p className="text-xl font-bold text-slate-400 dark:text-slate-600">No new entries detected this week.</p>
+      </div>
+    )}
+
+    {/* --- Footer / Navigation --- */}
+    <div className="mt-20 text-center">
+      <Link
+        to="/all-books"
+        className={`group inline-flex items-center px-10 py-4 ${ACCENT_BG} text-white font-bold text-sm uppercase tracking-widest rounded-xl transition-all duration-300 transform hover:translate-y-[-4px] ${ACCENT_HOVER} shadow-lg shadow-indigo-500/20`}
+      >
+        Access All Books
+        <FaArrowRight className="ml-3 transition-transform group-hover:translate-x-2" />
+      </Link>
+      <p className="mt-6 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+        Authorized Users Only • {latestBooks.length} Items Listed
+      </p>
+    </div>
+  </div>
+</section>
   );
 };
 

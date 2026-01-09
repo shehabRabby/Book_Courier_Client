@@ -31,7 +31,7 @@ const CoverageCity = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [mapFocusCenter, setMapFocusCenter] = useState(null); 
     const [matchingDistricts, setMatchingDistricts] = useState([]); 
-    const accentColor = "#ff0077"; // Brand Pink
+    const accentColor = "#4f46e5"; // Brand Pink
     const defaultPosition = [23.8103, 90.4125];
 
     useEffect(() => {
@@ -79,12 +79,12 @@ const CoverageCity = () => {
     );
 
     return (
-        <section className="py-12 bg-base-200 min-h-screen">
+        <section className="py-12  min-h-screen">
             <div className="max-w-7xl mx-auto px-4">
                 
                 {/* Header Section */}
                 <div className="text-center mb-10">
-                    <h2 className="text-4xl font-black text-base-content flex items-center justify-center gap-3">
+                    <h2 className="text-4xl font-black text-primary flex items-center justify-center gap-3">
                         <IoLocationSharp style={{ color: accentColor }} />
                         Service Coverage
                     </h2>
@@ -141,7 +141,7 @@ const CoverageCity = () => {
                         </div>
 
                         {/* Main Map View */}
-                        <div className="lg:col-span-3 h-[600px] lg:h-[700px] relative">
+                        <div className="lg:col-span-3 h-[600px] lg:h-[600px] relative">
                             <MapContainer
                                 center={defaultPosition} 
                                 zoom={7}
@@ -178,9 +178,9 @@ const CoverageCity = () => {
                         <div 
                             key={d} 
                             onClick={() => findAndFocusDistrict(d)}
-                            className="bg-base-100 p-4 rounded-2xl border border-base-300 hover:border-pink-500 cursor-pointer transition-all text-center group"
+                            className="bg-base-100 p-4 rounded-2xl border border-base-300 hover:border-primary cursor-pointer transition-all text-center group"
                         >
-                            <span className="text-sm font-bold group-hover:text-pink-500 transition-colors">{d}</span>
+                            <span className="text-sm font-bold group-hover:text-primary transition-colors">{d}</span>
                         </div>
                     ))}
                 </div>

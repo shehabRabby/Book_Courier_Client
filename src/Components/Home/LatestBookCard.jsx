@@ -1,92 +1,84 @@
 import React from "react";
 import { FaBookOpen, FaStar } from "react-icons/fa";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import bookImg from "../../assets/toplibrary1.png";
 
 const LatestBookCard = ({ book }) => {
-  const {
-    _id,
-    bookTitle,
-    photo,
-    rating,
-    isRatingHighlighted,
-  } = book;
+  const { _id, bookTitle, photo, rating, isRatingHighlighted } = book;
 
-  const ACCENT_COLOR = "#ff0077"; 
-  
+  // 🎨 THEME ADJUSTMENT: Using our Professional Indigo and Emerald
+  const PRIMARY_COLOR = "#4F46E5"; // Indigo 600
+  const HIGHLIGHT_COLOR = "#10B981"; // Emerald 500 for "Top Pick"
+
   const highlightStyles = isRatingHighlighted
     ? {
-        border: `2px solid ${ACCENT_COLOR}`,
-        boxShadow: `0 0 20px -5px ${ACCENT_COLOR}66`,
+        border: `2px solid ${HIGHLIGHT_COLOR}`,
+        boxShadow: `0 10px 25px -10px ${HIGHLIGHT_COLOR}44`,
       }
     : {};
 
   return (
-    <div 
-      style={highlightStyles}
-      className={`group relative bg-base-100 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-base-300 ${isRatingHighlighted ? 'ring-1 ring-offset-2 ring-pink-500/20' : ''}`}
+    <div
+      className={`group relative  dark:bg-zinc-900 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-zinc-200 dark:border-zinc-800 ${
+        isRatingHighlighted ? "ring-2 ring-emerald-500/20" : ""
+      }`}
     >
       {isRatingHighlighted && (
         <div className="absolute top-3 right-3 z-20">
-          <span className="badge badge-secondary badge-sm font-bold shadow-md animate-pulse">
-            TOP PICK
+          <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-[9px] font-black shadow-lg shadow-emerald-500/20 animate-pulse uppercase tracking-[0.15em]">
+            Top Pick
           </span>
         </div>
       )}
 
-      {/* --- Image Section --- */}
-      <div className="h-52 relative overflow-hidden bg-base-200">
-        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors z-10" />
+      <div className="h-56 relative overflow-hidden bg-zinc-100 dark:bg-zinc-950">
+        <div className="absolute inset-0 bg-zinc-900/5 group-hover:bg-transparent transition-colors z-10" />
         <img
           src={photo || bookImg}
           alt={bookTitle}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
       </div>
-      
-      {/* --- Content Section --- */}
-      <div className="p-5 flex flex-col items-center">
-        
-        {/* Book Title */}
-        <h3
-          className="text-md font-black text-base-content text-center line-clamp-1 mb-2 group-hover:text-[#ff0077] transition-colors"
-          title={bookTitle}
-        >
-          {bookTitle}
-        </h3>
 
-        {/* Rating Display */}
-        <div className="flex justify-center items-center gap-1 mb-6">
-          {[...Array(5)].map((_, i) => (
-            <FaStar
-              key={i}
-              className={`text-xs ${
-                i < rating ? "text-yellow-400" : "text-base-content/20" 
-              }`}
-            />
-          ))}
-          <span className="ml-2 text-[10px] font-black opacity-40 tracking-widest uppercase">
-            {rating}/5
-          </span>
+      <div className="p-5 flex flex-col gap-3">
+        <div>
+          <h3
+            className="text-md font-bold text-primary dark:text-zinc-50 text-left line-clamp-1 group-hover:text-primary transition-colors tracking-tight"
+            title={bookTitle}
+          >
+            {bookTitle}
+          </h3>
+
+          <div className="flex items-center gap-1 mt-1">
+            {[...Array(5)].map((_, i) => (
+              <FaStar
+                key={i}
+                className={`text-[9px] ${
+                  i < rating
+                    ? "text-blue-600"
+                    : "text-zinc-300 dark:text-zinc-700"
+                }`}
+              />
+            ))}
+            <span className="ml-2 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+              {rating}.0
+            </span>
+          </div>
         </div>
 
-        {/* Action Button */}
         <Link
           to={`/book/${_id}`}
-          className="w-full btn btn-sm border-none text-white transition-all duration-300 gap-2 hover:gap-4"
-          style={{ 
-            backgroundColor: ACCENT_COLOR,
-            boxShadow: isRatingHighlighted ? `0 10px 15px -3px ${ACCENT_COLOR}44` : 'none'
-          }}
+          className="w-full btn btn-sm bg-primary hover:bg-primary-hover border-none text-primary-content transition-all duration-300 gap-2 rounded-xl h-10 shadow-lg shadow-primary/20 dark:shadow-primary/10"
         >
-          <FaBookOpen className="text-xs" />
-          <span className="text-[11px] font-bold uppercase tracking-widest">See Details</span>
+          <FaBookOpen className="text-[10px]" />
+          <span className="text-[10px] font-bold uppercase tracking-widest">
+            Details
+          </span>
         </Link>
       </div>
 
-      {/* Subtle Bottom Accent Line */}
       {isRatingHighlighted && (
-        <div className="h-1 w-full absolute bottom-0 bg-gradient-to-r from-transparent via-[#ff0077] to-transparent opacity-50" />
+        <div className="h-1 w-full absolute bottom-0 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60" />
       )}
     </div>
   );

@@ -1,77 +1,82 @@
 @import "tailwindcss";
 
-/* 1. Register DaisyUI Plugin */
 @plugin "daisyui" {
   themes: light, dark; 
 }
 
-/* 2. Configure Custom Theme Variables */
 @theme {
-  /* Brand Colors - Shifted to Professional Indigo & Teal */
-  --color-primary-main: #4f46e5;    /* Indigo 600 */
-  --color-primary-dark: #3730a3;    /* Indigo 800 */
-  --color-secondary-main: #0d9488;  /* Teal 600 */
-  --color-accent-main: #f59e0b;     /* Amber for Star Ratings/Alerts */
-  
-  /* Neutral Palette for Clean UI */
-  --color-slate-50: #f8fafc;
-  --color-slate-900: #0f172a;
+  --color-primary-main: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-success-main: #10b981;
+  --color-zinc-50: #fafafa;
+  --color-zinc-900: #09090b;
 
-  /* Custom Animations */
-  --animate-fade-in: fadeIn 0.5s ease-out;
-  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  --animate-subtle-float: float 3s ease-in-out infinite;
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
   }
 }
 
-/* 3. DaisyUI Theme Customization */
 [data-theme="light"] {
   --color-primary: #4f46e5;
-  --color-secondary: #0d9488;
-  --color-accent: #f59e0b;
-  --bg-base-100: #f8fafc; /* Subtle off-white background */
-  --base-content: #1e293b; /* Dark slate text */
+  --color-primary-content: #ffffff;
+  --color-secondary: #18181b;
+  --color-secondary-content: #ffffff;
+  --bg-base-100: #ffffff;
+  --bg-base-200: #f4f4f5;
+  --bg-base-300: #e4e4e7;
+  --base-content: #09090b;
+  --base-content-muted: #71717a;
 }
 
 [data-theme="dark"] {
-  --color-primary: #818cf8; /* Lighter indigo for dark mode */
-  --color-secondary: #2dd4bf;
-  --bg-base-100: #0f172a; /* Deep navy background */
-  --bg-base-200: #1e293b; /* Slightly lighter for cards */
-  --base-content: #f1f5f9; /* Light gray text */
+  --color-primary: #818cf8;
+  --color-primary-content: #000000;
+  --bg-base-100: #09090b;
+  --bg-base-200: #18181b;
+  --bg-base-300: #27272a;
+  --base-content: #fafafa;
+  --base-content-muted: #a1a1aa;
+  --btn-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
 }
 
-/* 4. Global Typography & Base Styles */
 @layer base {
   body {
-    @apply font-sans antialiased;
-    /* Clean, high-end font stack */
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply font-sans antialiased selection:bg-indigo-500/30;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--base-content);
     background-color: var(--bg-base-100);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Professional Heading Styles */
-  h1, h2, h3, h4 {
-    @apply font-bold tracking-tight text-slate-900 dark:text-slate-50;
+  h1, h2, h3 {
+    @apply font-extrabold tracking-[-0.03em] leading-tight;
+    color: var(--base-content);
   }
 
-  /* Custom Scrollbar */
+  p {
+    @apply leading-relaxed;
+    color: var(--base-content-muted);
+  }
+
   ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    width: 6px;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-primary-main;
+    @apply bg-zinc-300 dark:bg-zinc-800 rounded-full transition-colors;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-indigo-500;
+  }
+}
+
+@layer utilities {
+  .border-soft {
+    @apply border border-zinc-200 dark:border-zinc-800;
+  }
+  .glass-card {
+    @apply bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-white/20 dark:border-zinc-800/50;
   }
 }
