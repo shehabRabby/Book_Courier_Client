@@ -1,28 +1,26 @@
 import React from "react";
 import { FaSearch } from "react-icons/fa";
 
-const accentColor = "#ff0077";
-
 const SearchSection = ({ searchTerm, setSearchTerm }) => {
   return (
     <div className="md:col-span-2">
-      <label className="block text-sm font-medium text-base-content opacity-80 mb-1">
-        Search by Title or Author
+      <label className="block text-[10px] font-black uppercase tracking-widest text-base-content-muted mb-2 ml-1">
+        Search Library
       </label>
-      <div className="relative">
+      <div className="relative group">
         <input
           type="text"
-          placeholder="Enter book title or author name..."
+          placeholder="Search by title, author, or ISBN..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-3 pl-10 
-                               bg-base-100 text-base-content 
-                               border border-base-300 rounded-lg 
-                               placeholder-base-content/50 
-                               focus:ring-4 focus:border-transparent transition duration-150"
-          style={{ "--tw-ring-color": accentColor }}
+          className="w-full p-4 pl-12 
+                     bg-base-200 text-base-content 
+                     border-none rounded-2xl
+                     placeholder-base-content/40 
+                     focus:ring-2 focus:ring-primary/20 transition-all 
+                     font-medium text-sm"
         />
-        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content opacity-50" />
+        <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-base-content opacity-30 group-focus-within:text-primary group-focus-within:opacity-100 transition-all" />
       </div>
     </div>
   );

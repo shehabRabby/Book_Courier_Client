@@ -52,29 +52,21 @@ const OrderNowModal = ({
     };
 
     try {
-      // 🔑 SECURITY FIX: Use axiosSecure for the POST request
-      const response = await axiosSecure.post(
-        `/orders`, // Base URL is handled by the useAxiosSecure interceptor
-        orderData
-      );
+      const response = await axiosSecure.post(`/orders`, orderData);
 
       if (response.data.insertedId) {
-        toast.success("Order Logged. Status: PENDING / UNPAID");
+        toast.success("Order Logged. Status: PENDING");
         setOrderForm({ phone: "", address: "" });
         onClose();
       } else {
-        // Handle cases where the request succeeds but insertion fails for some reason
-        toast.error("Order failed to log. Backend acknowledgement missing.");
+        toast.error("Order failed to log.");
       }
     } catch (error) {
       console.error("Order Transmission Error:", error);
-      // Display a more helpful error message based on the status code
       if (error.response?.status === 401 || error.response?.status === 403) {
-        toast.error(
-          "Authentication Error: Please log in again to place an order."
-        );
+        toast.error("Authentication Error: Please log in again.");
       } else {
-        toast.error("System timeout or server error. Please try again.");
+        toast.error("System timeout or server error.");
       }
     } finally {
       setIsSubmitting(false);
@@ -83,115 +75,82 @@ const OrderNowModal = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            {/* Glassmorphism Backdrop */}
-           {" "}
+      {/* Glassmorphism Backdrop */}
       <div
-        className="absolute inset-0 bg-base-300/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-zinc-900/40 backdrop-blur-md"
         onClick={!isSubmitting ? onClose : null}
       />
-            {/* Terminal Content */}     {" "}
-      <div className="relative bg-base-100 border border-base-300 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-terminalPop">
-                        {/* Header Accent Line */}
-                <div className="h-1.5 w-full bg-[#ff0077]" />       {" "}
-        <div className="p-8">
-                   {" "}
+
+      {/* Modal Content */}
+      <div className="relative bg-base-100 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-terminalPop border-none">
+        {/* Header Accent Line (Primary Color) */}
+        <div className="h-2 w-full bg-primary" />
+
+        <div className="p-10">
           <div className="flex justify-between items-start mb-8">
-                       {" "}
             <div>
-                           {" "}
               <h3 className="text-2xl font-black text-base-content flex items-center gap-3">
-                                <FaShoppingCart className="text-[#ff0077]" />   
-                            Secure Checkout              {" "}
+                <FaShoppingCart className="text-primary" />
+                Secure Checkout
               </h3>
-                           {" "}
-              <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest mt-1">
-                                Transaction ID: TXN-
-                {Math.random().toString(36).substr(2, 9).toUpperCase()}         
-                   {" "}
+              <p className="text-[10px] font-bold text-base-content-muted uppercase tracking-[0.2em] mt-2 opacity-60">
+                Transaction ID: TXN-
+                {Math.random().toString(36).substr(2, 9).toUpperCase()}
               </p>
-                         {" "}
             </div>
-                       {" "}
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="btn btn-circle btn-ghost btn-sm opacity-40 hover:opacity-100"
+              className="p-2 rounded-full hover:bg-base-200 text-base-content-muted transition-colors"
             >
-                            <FaRegWindowClose className="text-xl" />           {" "}
+              <FaRegWindowClose className="text-xl" />
             </button>
-                     {" "}
           </div>
-                    {/* Book Summary Card */}         {" "}
-          <div className="mb-8 p-6 bg-base-200 rounded-2xl border border-base-300 flex justify-between items-center">
-                       {" "}
-            <div className="max-w-[70%]">
-                           {" "}
-              <p className="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-1">
+
+          {/* Asset Summary Card */}
+          <div className="mb-8 p-6 bg-base-200 rounded-3xl flex justify-between items-center">
+            <div className="max-w-[65%]">
+              <p className="text-[10px] font-black text-base-content-muted uppercase tracking-widest mb-1">
                 Selected Asset
               </p>
-                           {" "}
-              <p className="font-bold text-base-content truncate">
+              <p className="font-bold text-base-content truncate text-lg">
                 {bookTitle}
               </p>
-                         {" "}
             </div>
-                       {" "}
             <div className="text-right">
-                           {" "}
-              <p className="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-1">
+              <p className="text-[10px] font-black text-base-content-muted uppercase tracking-widest mb-1">
                 Total Due
               </p>
-                           {" "}
-              <p className="text-2xl font-black text-[#ff0077]">${bookPrice}</p>
-                         {" "}
+              <p className="text-2xl font-black text-primary">${bookPrice}</p>
             </div>
-                     {" "}
           </div>
-                   {" "}
-          <form onSubmit={handleOrder} className="space-y-5">
-                        {/* Read-Only User Context */}           {" "}
+
+          <form onSubmit={handleOrder} className="space-y-6">
+            {/* Read-Only Info */}
             <div className="grid grid-cols-2 gap-4">
-                           {" "}
-              <div className="opacity-60 pointer-events-none">
-                               {" "}
-                <label className="text-[10px] font-black uppercase tracking-widest mb-2 block">
+              <div className="space-y-2 opacity-70">
+                <label className="text-[10px] font-black text-base-content-muted uppercase tracking-widest ml-1">
                   Purchaser
                 </label>
-                               {" "}
-                <input
-                  type="text"
-                  value={currentUser.name}
-                  className="w-full bg-base-200 border-none rounded-xl text-xs py-3 px-4 font-bold"
-                  readOnly
-                />
-                             {" "}
+                <div className="bg-base-200 rounded-xl py-3 px-4 text-xs font-bold text-base-content">
+                  {currentUser.name}
+                </div>
               </div>
-                           {" "}
-              <div className="opacity-60 pointer-events-none">
-                               {" "}
-                <label className="text-[10px] font-black uppercase tracking-widest mb-2 block">
+              <div className="space-y-2 opacity-70">
+                <label className="text-[10px] font-black text-base-content-muted uppercase tracking-widest ml-1">
                   Auth Email
                 </label>
-                               {" "}
-                <input
-                  type="text"
-                  value={currentUser.email}
-                  className="w-full bg-base-200 border-none rounded-xl text-xs py-3 px-4 font-bold"
-                  readOnly
-                />
-                             {" "}
+                <div className="bg-base-200 rounded-xl py-3 px-4 text-xs font-bold text-base-content truncate">
+                  {currentUser.email}
+                </div>
               </div>
-                         {" "}
             </div>
-                        {/* Editable Information */}           {" "}
-            <div>
-                           {" "}
-              <label className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
-                               {" "}
-                <FaPhoneAlt className="text-[#ff0077] text-[8px]" /> Contact
-                Signal (Phone)              {" "}
+
+            {/* Input Fields */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-base-content-muted uppercase tracking-widest ml-1 flex items-center gap-2">
+                <FaPhoneAlt className="text-primary text-[8px]" /> Contact Signal
               </label>
-                           {" "}
               <input
                 type="tel"
                 value={orderForm.phone}
@@ -200,19 +159,14 @@ const OrderNowModal = ({
                 }
                 required
                 placeholder="+8801XXXXXXXXX"
-                className="input input-bordered w-full rounded-xl bg-base-100 focus:border-[#ff0077] transition-all"
+                className="w-full py-4 px-5 rounded-2xl bg-base-200 text-base-content focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium border-none"
               />
-                         {" "}
             </div>
-                       {" "}
-            <div>
-                           {" "}
-              <label className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
-                               {" "}
-                <FaMapMarkedAlt className="text-[#ff0077] text-[8px]" />{" "}
-                Deployment Address              {" "}
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-base-content-muted uppercase tracking-widest ml-1 flex items-center gap-2">
+                <FaMapMarkedAlt className="text-primary text-[8px]" /> Deployment Address
               </label>
-                           {" "}
               <textarea
                 value={orderForm.address}
                 onChange={(e) =>
@@ -220,45 +174,37 @@ const OrderNowModal = ({
                 }
                 required
                 rows="3"
-                placeholder="Coordinates / Street Address"
-                className="textarea textarea-bordered w-full rounded-xl bg-base-100 focus:border-[#ff0077] transition-all resize-none"
+                placeholder="Street Address / City"
+                className="w-full py-4 px-5 rounded-2xl bg-base-200 text-base-content focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium border-none resize-none"
               ></textarea>
-                         {" "}
             </div>
-                        {/* Submission Logic */}                       {" "}
+
+            {/* Confirm Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full btn border-none text-white rounded-2xl h-14 text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-pink-500/20 group"
-              style={{ backgroundColor: "#ff0077" }}
+              className="w-full btn btn-primary border-none text-white rounded-2xl h-16 text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 group transition-all active:scale-95"
             >
-                           {" "}
               {isSubmitting ? (
                 <FaSpinner className="animate-spin text-xl" />
               ) : (
-                <>
-                                    Confirm Transaction                  {" "}
-                  <FaCheckCircle className="ml-2 group-hover:scale-125 transition-transform" />
-                                 {" "}
-                </>
+                <div className="flex items-center justify-center gap-2">
+                  Confirm Transaction
+                  <FaCheckCircle className="text-lg group-hover:scale-110 transition-transform" />
+                </div>
               )}
-                         {" "}
             </button>
-                     {" "}
           </form>
-                 {" "}
         </div>
-             {" "}
       </div>
-           {" "}
+
       <style>{`
-        @keyframes terminalPop {
-          from { opacity: 0; transform: scale(0.95) translateY(10px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .animate-terminalPop { animation: terminalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-      `}</style>
-         {" "}
+        @keyframes terminalPop {
+          from { opacity: 0; transform: scale(0.95) translateY(20px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-terminalPop { animation: terminalPop 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+      `}</style>
     </div>
   );
 };
