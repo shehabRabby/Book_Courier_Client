@@ -4,6 +4,17 @@
 
 BookCourier is a full-stack, comprehensive library delivery management system designed to connect readers, students, and researchers with their nearby libraries. It facilitates seamless book borrowing and returning processes, eliminating the need for physical library visits. This system is built to enhance accessibility, convenience, and efficiency in book management and delivery.
 
+--
+
+## 🌐 Live Access and Repositories
+
+| Item | Details |
+| :--- | :--- |
+| **Live Site URL** | [https://bookcouriernew.netlify.app/](https://bookcouriernew.netlify.app/) |
+| **Client-Side Repository** | [https://github.com/shehabRabby/Book_Courier_Client](https://github.com/shehabRabby/Book_Courier_Client) |
+| **Server-Side Repository** | [https://github.com/shehabRabby/Book_Courier_Server](https://github.com/shehabRabby/Book_Courier_Server) |
+--
+
 ## ✨ Key Features
 
 This project includes a wide range of features structured around three distinct user roles: **User**, **Librarian**, and **Admin**.
@@ -73,13 +84,6 @@ The following are some of the key packages utilized across the client and server
 
 ---
 
-## 🌐 Live Access and Repositories
-
-| Item | Details |
-| :--- | :--- |
-| **Live Site URL** | [https://bookcouriernew.netlify.app/](https://bookcouriernew.netlify.app/) |
-| **Client-Side Repository** | [https://github.com/shehabRabby/Book_Courier_Client](https://github.com/shehabRabby/Book_Courier_Client) |
-| **Server-Side Repository** | [https://github.com/shehabRabby/Book_Courier_Server](https://github.com/shehabRabby/Book_Courier_Server) |
 
 ### Test Credentials
 
