@@ -61,8 +61,7 @@ const AddBook = () => {
     mutateAsync,
     reset: mutationReset,
   } = useMutation({
-    mutationFn: async (payload) =>
-      await axiosSecure.post(`/books`, payload),
+    mutationFn: async (payload) => await axiosSecure.post(`/books`, payload),
     onSuccess: () => {
       toast.success("Book Successfully Added");
       mutationReset();
@@ -105,7 +104,7 @@ const AddBook = () => {
     }
   };
 
-  if (isPending) return <Loading />;
+  // if (isPending) return <Loading />;
   if (isError) return <ErrorPage />;
 
   return (
@@ -139,7 +138,8 @@ const AddBook = () => {
               <motion.div variants={itemVariants}>
                 <label className="label font-bold uppercase tracking-tighter opacity-70">
                   <span className="flex items-center">
-                    <FaBook className="mr-2" style={{ color: accentColor }} /> Book Title
+                    <FaBook className="mr-2" style={{ color: accentColor }} />{" "}
+                    Book Title
                   </span>
                 </label>
                 <input
@@ -148,29 +148,44 @@ const AddBook = () => {
                   placeholder="e.g. The Great Gatsby"
                   className="input input-bordered w-full bg-base-200 focus:outline-[#6366f1] border-base-300 font-medium"
                 />
-                {errors.bookTitle && <span className="text-error text-xs font-bold mt-1 uppercase italic">{errors.bookTitle.message}</span>}
+                {errors.bookTitle && (
+                  <span className="text-error text-xs font-bold mt-1 uppercase italic">
+                    {errors.bookTitle.message}
+                  </span>
+                )}
               </motion.div>
 
               <motion.div variants={itemVariants}>
                 <label className="label font-bold uppercase tracking-tighter opacity-70">
                   <span className="flex items-center">
-                    <FaUserEdit className="mr-2" style={{ color: accentColor }} /> Author Name
+                    <FaUserEdit
+                      className="mr-2"
+                      style={{ color: accentColor }}
+                    />{" "}
+                    Author Name
                   </span>
                 </label>
                 <input
                   type="text"
-                  {...register("authorName", { required: "Author name is required" })}
+                  {...register("authorName", {
+                    required: "Author name is required",
+                  })}
                   placeholder="Author Name"
                   className="input input-bordered w-full bg-base-200 focus:outline-[#6366f1] border-base-300 font-medium"
                 />
-                {errors.authorName && <span className="text-error text-xs font-bold mt-1 uppercase italic">{errors.authorName.message}</span>}
+                {errors.authorName && (
+                  <span className="text-error text-xs font-bold mt-1 uppercase italic">
+                    {errors.authorName.message}
+                  </span>
+                )}
               </motion.div>
 
               <div className="grid grid-cols-2 gap-4">
                 <motion.div variants={itemVariants}>
                   <label className="label font-bold uppercase tracking-tighter opacity-70">
                     <span className="flex items-center">
-                      <FaTag className="mr-2" style={{ color: accentColor }} /> Genre
+                      <FaTag className="mr-2" style={{ color: accentColor }} />{" "}
+                      Genre
                     </span>
                   </label>
                   <select
@@ -188,7 +203,11 @@ const AddBook = () => {
                 <motion.div variants={itemVariants}>
                   <label className="label font-bold uppercase tracking-tighter opacity-70">
                     <span className="flex items-center">
-                      <FaCheckCircle className="mr-2" style={{ color: accentColor }} /> Status
+                      <FaCheckCircle
+                        className="mr-2"
+                        style={{ color: accentColor }}
+                      />{" "}
+                      Status
                     </span>
                   </label>
                   <select
@@ -205,7 +224,8 @@ const AddBook = () => {
               <motion.div variants={itemVariants}>
                 <label className="label font-bold uppercase tracking-tighter opacity-70">
                   <span className="flex items-center">
-                    <FaImage className="mr-2" style={{ color: accentColor }} /> Cover Image
+                    <FaImage className="mr-2" style={{ color: accentColor }} />{" "}
+                    Cover Image
                   </span>
                 </label>
                 <input
@@ -213,7 +233,11 @@ const AddBook = () => {
                   type="file"
                   className="file-input file-input-bordered w-full bg-base-200 border-base-300 file:bg-indigo-600 file:text-white file:border-none file:font-bold"
                 />
-                {errors.photo && <span className="text-error text-xs font-bold mt-1 uppercase italic">{errors.photo.message}</span>}
+                {errors.photo && (
+                  <span className="text-error text-xs font-bold mt-1 uppercase italic">
+                    {errors.photo.message}
+                  </span>
+                )}
               </motion.div>
             </div>
 
@@ -223,7 +247,11 @@ const AddBook = () => {
                 <motion.div variants={itemVariants}>
                   <label className="label font-bold uppercase tracking-tighter opacity-70">
                     <span className="flex items-center">
-                      <FaDollarSign className="mr-2" style={{ color: accentColor }} /> Price ($)
+                      <FaDollarSign
+                        className="mr-2"
+                        style={{ color: accentColor }}
+                      />{" "}
+                      Price ($)
                     </span>
                   </label>
                   <input
@@ -238,7 +266,11 @@ const AddBook = () => {
                 <motion.div variants={itemVariants}>
                   <label className="label font-bold uppercase tracking-tighter opacity-70">
                     <span className="flex items-center">
-                      <FaRulerVertical className="mr-2" style={{ color: accentColor }} /> Pages
+                      <FaRulerVertical
+                        className="mr-2"
+                        style={{ color: accentColor }}
+                      />{" "}
+                      Pages
                     </span>
                   </label>
                   <input
@@ -253,7 +285,8 @@ const AddBook = () => {
               <motion.div variants={itemVariants}>
                 <label className="label font-bold uppercase tracking-tighter opacity-70">
                   <span className="flex items-center">
-                    <FaBook className="mr-2" style={{ color: accentColor }} /> ISBN
+                    <FaBook className="mr-2" style={{ color: accentColor }} />{" "}
+                    ISBN
                   </span>
                 </label>
                 <input
@@ -268,7 +301,11 @@ const AddBook = () => {
                 <motion.div variants={itemVariants}>
                   <label className="label font-bold uppercase tracking-tighter opacity-70">
                     <span className="flex items-center">
-                      <FaGlobe className="mr-2" style={{ color: accentColor }} /> Language
+                      <FaGlobe
+                        className="mr-2"
+                        style={{ color: accentColor }}
+                      />{" "}
+                      Language
                     </span>
                   </label>
                   <input
@@ -282,7 +319,11 @@ const AddBook = () => {
                 <motion.div variants={itemVariants}>
                   <label className="label font-bold uppercase tracking-tighter opacity-70">
                     <span className="flex items-center">
-                      <FaCalendarAlt className="mr-2" style={{ color: accentColor }} /> Pub. Date
+                      <FaCalendarAlt
+                        className="mr-2"
+                        style={{ color: accentColor }}
+                      />{" "}
+                      Pub. Date
                     </span>
                   </label>
                   <input
@@ -296,7 +337,8 @@ const AddBook = () => {
               <motion.div variants={itemVariants}>
                 <label className="label font-bold uppercase tracking-tighter opacity-70">
                   <span className="flex items-center">
-                    <FaStar className="mr-2" style={{ color: accentColor }} /> Rating (1.0 - 5.0)
+                    <FaStar className="mr-2" style={{ color: accentColor }} />{" "}
+                    Rating (1.0 - 5.0)
                   </span>
                 </label>
                 <input
@@ -315,7 +357,11 @@ const AddBook = () => {
             <motion.div variants={itemVariants} className="lg:col-span-2">
               <label className="label font-bold uppercase tracking-tighter opacity-70">
                 <span className="flex items-center">
-                  <FaInfoCircle className="mr-2" style={{ color: accentColor }} /> Synopsis
+                  <FaInfoCircle
+                    className="mr-2"
+                    style={{ color: accentColor }}
+                  />{" "}
+                  Synopsis
                 </span>
               </label>
               <textarea
@@ -336,6 +382,7 @@ const AddBook = () => {
               style={{ backgroundColor: accentColor }}
             >
               <FaCloudUploadAlt className="mr-3 text-2xl" />
+              {/* Ekhon eita thik moto "Adding Book..." dekhabe */}
               {isPending ? "Adding Book..." : "Catalog Book"}
             </button>
           </motion.div>
