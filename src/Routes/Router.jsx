@@ -20,7 +20,7 @@ import MyBooks from "../Pages/Dashboard/MyBook/MyBooks";
 import Orders from "../Pages/Dashboard/Orders/Orders";
 import AllUsers from "../Pages/Dashboard/AllUsers/AllUsers";
 import ManageBooks from "../Pages/Dashboard/ManageBooks/ManageBooks";
-import Invoices from "../Pages/Dashboard/Invoices/invoices";
+import Invoices from "../Pages/Dashboard/Invoices/Invoices";
 import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
 import PaymentPage from "../Pages/Payment/PaymentPage";
 import BookEdit from "../Pages/Dashboard/MyBook/BookEdit";

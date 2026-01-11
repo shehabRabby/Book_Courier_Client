@@ -77,7 +77,7 @@ The following are some of the key packages utilized across the client and server
 
 | Item | Details |
 | :--- | :--- |
-| **Live Site URL** | [https://book-parcel.web.app/](https://book-parcel.web.app/) |
+| **Live Site URL** | [https://bookcouriernew.netlify.app/](https://bookcouriernew.netlify.app/) |
 | **Client-Side Repository** | [https://github.com/shehabRabby/Book_Courier_Client](https://github.com/shehabRabby/Book_Courier_Client) |
 | **Server-Side Repository** | [https://github.com/shehabRabby/Book_Courier_Server](https://github.com/shehabRabby/Book_Courier_Server) |
 
