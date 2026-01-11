@@ -7,7 +7,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 // Assets
 import banner1 from "../../../assets/banner4.jpg";
 import banner2 from "../../../assets/banner5.jpg";
-import banner3 from "../../../assets/banner6.jpg";
+import banner3 from "../../../assets/new1.jpg";
 import banner4 from "../../../assets/banner7.jpg";
 
 // 🎨 THEME ADJUSTMENT: Using our professional Indigo Primary

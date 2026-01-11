@@ -4,8 +4,8 @@ import { Link } from "react-router";
 // Assuming you are using IoIcons from react-icons
 import { IoArrowForwardOutline } from "react-icons/io5";
 // Imported Images
-import banner1 from "../../../assets/banner4.jpg";
-import banner2 from "../../../assets/banner5.jpg";
+import banner1 from "../../../assets/new6.jpg";
+import banner2 from "../../../assets/new3.jpg";
 import banner3 from "../../../assets/banner6.jpg";
 
 // --- Data for the Featured Pick ---

@@ -12,122 +12,137 @@ const Register = () => {
   const { registerUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const accentColor = "#ff0077"; // Brand accent
+
+  // Consistent Brand Colors
+  const brandPrimary = "#6366f1";
+  const brandDark = "#4f46e5";   
 
   const handleRegistration = async (data) => {
     setLoading(true);
-    const regToast = toast.loading("Creating your account...");
+    // Unique ID used to replace loading toast with success/error
+    const toastId = toast.loading("Processing your registration...");
     const profileImage = data.photo[0];
 
     try {
       // 1. Firebase Registration
-      const result = await registerUser(data.email, data.password);
+      await registerUser(data.email, data.password);
 
       // 2. Image Upload to ImgBB
       const imageData = await imageUpload(profileImage);
       const photoURL = imageData.data.display_url;
 
-      // 3. Update Firebase Profile with Name and Photo
+      // 3. Update Firebase Profile
       const userProfile = {
         displayName: data.name,
         photoURL: photoURL,
       };
       await updateUserProfile(userProfile);
 
-      toast.success("Account created successfully!", { id: regToast });
+      // Success Message - Clean and Bold
+      toast.success("Account created! Welcome to the network.", { id: toastId });
+      
       navigate(location.state || "/", { replace: true });
     } catch (error) {
       console.error("Error:", error);
-      toast.error(error.message || "Registration failed.", { id: regToast });
+      
+      // Error Message - Handling specific Firebase errors or generic ones
+      let errorMessage = "Registration failed. Please try again.";
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = "This email is already registered.";
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = "Password is too weak.";
+      }
+
+      toast.error(errorMessage, { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200">
-      <div className="w-full max-w-md bg-base-100 shadow-2xl rounded-3xl overflow-hidden border border-base-300">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200 transition-colors duration-500">
+      <div className="w-full max-w-md bg-base-100 shadow-2xl rounded-[2.5rem] overflow-hidden border border-base-300">
         
-        {/* Decorative Top Bar */}
-        <div className="h-2 w-full" style={{ backgroundColor: accentColor }}></div>
+        {/* Top Decorative Gradient */}
+        <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
 
-        <div className="p-8">
-          <header className="text-center mb-8">
-            <h2 className="text-3xl font-black text-base-content flex items-center justify-center gap-3">
-              <FaUserPlus style={{ color: accentColor }} />
+        <div className="p-10">
+          <header className="text-center mb-10">
+            <h2 className="text-3xl font-black text-base-content flex items-center justify-center gap-3 uppercase tracking-tighter">
+              <FaUserPlus className="text-indigo-500" />
               Register
             </h2>
-            <p className="text-sm opacity-60 mt-2 font-medium italic">Join the librarian network</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mt-2 text-indigo-600">
+              System Access Protocol
+            </p>
           </header>
 
-          
-
-          <form onSubmit={handleSubmit(handleRegistration)} className="space-y-4">
+          <form onSubmit={handleSubmit(handleRegistration)} className="space-y-5">
             
             {/* Name Field */}
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
-                  <FaUser /> Full Name
+                <span className="label-text font-black text-[10px] uppercase tracking-widest opacity-70 flex items-center gap-2">
+                  <FaUser className="text-indigo-500 text-[10px]" /> Full Name
                 </span>
               </label>
               <input
                 type="text"
                 {...register("name", { required: "Name is required" })}
-                placeholder="John Doe"
-                className="input input-bordered w-full focus:outline-none"
+                placeholder="Enter your name"
+                className="input input-bordered w-full focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all rounded-2xl font-bold text-sm"
               />
-              {errors.name && <span className="text-error text-xs mt-1">{errors.name.message}</span>}
+              {errors.name && <span className="text-error text-[10px] mt-1 font-black uppercase tracking-tighter">{errors.name.message}</span>}
             </div>
 
             {/* Email Field */}
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
-                  <FaEnvelope /> Email Address
+                <span className="label-text font-black text-[10px] uppercase tracking-widest opacity-70 flex items-center gap-2">
+                  <FaEnvelope className="text-indigo-500 text-[10px]" /> Email Address
                 </span>
               </label>
               <input
                 type="email"
                 {...register("email", { required: "Email is required" })}
-                placeholder="name@company.com"
-                className="input input-bordered w-full focus:outline-none"
+                placeholder="name@example.com"
+                className="input input-bordered w-full focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all rounded-2xl font-bold text-sm"
               />
-              {errors.email && <span className="text-error text-xs mt-1">{errors.email.message}</span>}
+              {errors.email && <span className="text-error text-[10px] mt-1 font-black uppercase tracking-tighter">{errors.email.message}</span>}
             </div>
 
             {/* Password Field */}
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
-                  <FaLock /> Password
+                <span className="label-text font-black text-[10px] uppercase tracking-widest opacity-70 flex items-center gap-2">
+                  <FaLock className="text-indigo-500 text-[10px]" /> Security Key
                 </span>
               </label>
               <input
                 type="password"
                 {...register("password", {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "Minimum 6 characters" }
+                  required: "Password required",
+                  minLength: { value: 6, message: "Min 6 characters" }
                 })}
                 placeholder="••••••••"
-                className="input input-bordered w-full focus:outline-none"
+                className="input input-bordered w-full focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all rounded-2xl font-bold text-sm"
               />
-              {errors.password && <span className="text-error text-xs mt-1">{errors.password.message}</span>}
+              {errors.password && <span className="text-error text-[10px] mt-1 font-black uppercase tracking-tighter">{errors.password.message}</span>}
             </div>
 
             {/* Image Upload Field */}
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text font-bold text-xs uppercase opacity-70 flex items-center gap-2">
-                  <FaImage /> Profile Photo
+                <span className="label-text font-black text-[10px] uppercase tracking-widest opacity-70 flex items-center gap-2">
+                  <FaImage className="text-indigo-500 text-[10px]" /> Profile Identity
                 </span>
               </label>
               <input
                 type="file"
-                {...register("photo", { required: "Photo is required" })}
-                className="file-input file-input-bordered file-input-md w-full bg-base-200"
+                {...register("photo", { required: "Identity photo required" })}
+                className="file-input file-input-bordered w-full bg-base-200 focus:outline-none focus:border-indigo-500 rounded-2xl text-xs font-bold"
               />
-              {errors.photo && <span className="text-error text-xs mt-1">{errors.photo.message}</span>}
+              {errors.photo && <span className="text-error text-[10px] mt-1 font-black uppercase tracking-tighter">{errors.photo.message}</span>}
             </div>
 
             {/* Submit Button */}
@@ -135,23 +150,23 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn text-white border-none shadow-lg"
-                style={{ backgroundColor: accentColor }}
+                className="btn h-14 text-white border-none shadow-xl shadow-indigo-500/20 hover:scale-[1.02] active:scale-95 transition-all rounded-2xl uppercase tracking-[0.2em] font-black text-xs"
+                style={{ backgroundColor: brandDark }}
               >
-                {loading ? <span className="loading loading-spinner"></span> : "SignUp"}
+                {loading ? <span className="loading loading-spinner loading-sm"></span> : "Initialize Account"}
               </button>
             </div>
           </form>
 
-          {/* Footer Link */}
-          <div className="mt-8 text-center border-t border-base-300 pt-6">
-            <p className="text-sm opacity-70">
-              Already have an account?
+          {/* Footer */}
+          <div className="mt-10 text-center border-t border-base-300 pt-8">
+            <p className="text-[11px] font-bold opacity-60 uppercase tracking-widest">
+              Already verified?
               <Link
                 state={location.state}
                 to="/login"
-                className="font-bold ml-2 hover:underline"
-                style={{ color: accentColor }}
+                className="font-black ml-2 hover:text-indigo-400 transition-colors"
+                style={{ color: brandPrimary }}
               >
                 Sign In
               </Link>

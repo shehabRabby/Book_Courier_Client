@@ -8,9 +8,9 @@ import {
 } from "@heroicons/react/24/outline";
 
 // Assets import (Assuming these images exist in your assets folder)
-import banner1 from "../../assets/banner3.png"; 
-import banner2 from "../../assets/banner4.jpg"; 
-import banner3 from "../../assets/banner5.jpg"; 
+import banner1 from "../../assets/new2.jpg"; 
+import banner2 from "../../assets/new7.jpg"; 
+import banner3 from "../../assets/new8.jpg"; 
 import { Link } from "react-router";
 // Agar sirf 3 images hain, to aap steps array me accordingly adjust kar sakte hain.
 

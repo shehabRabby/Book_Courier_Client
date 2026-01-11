@@ -10,10 +10,10 @@ import LatestBook from '../LatestBook/LatestBook';
 
 
 
+
 const Home = () => {
     return (
         <div>
-           
             <Banner></Banner>
             <LatestBook></LatestBook>
             <WhyChoose></WhyChoose>

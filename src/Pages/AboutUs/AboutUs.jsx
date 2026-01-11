@@ -14,7 +14,7 @@ import HowItWorks from "../../Components/Aboutus/HowItWorks";
 import MarqueeWorkflow from "../../Components/Aboutus/MarqueeWorkflow";
 
 // Assets
-import banner3 from "../../assets/banner4.jpg";
+import banner3 from "../../assets/new4.jpg";
 import TechStackGrid from "../../Components/Aboutus/TechStackGrid";
 import AboutFooter from "../../Components/Aboutus/AboutFooter";
 

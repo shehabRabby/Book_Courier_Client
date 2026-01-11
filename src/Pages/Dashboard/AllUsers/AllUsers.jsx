@@ -5,7 +5,6 @@ import {
   FaUsersCog,
   FaUserShield,
   FaUserTag,
-  FaUserEdit,
 } from "react-icons/fa";
 import useRole from "../../../Role/useRole";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
@@ -14,7 +13,7 @@ const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const accentColor = "#ff0077";
+  const accentColor = "#6366f1"; // Changed to Indigo-500
   const axiosSecure = useAxiosSecure();
   const [, , refetchUserRole] = useRole();
 
@@ -22,7 +21,8 @@ const AllUsers = () => {
     background: "var(--fallback-b1,oklch(var(--b1)))",
     color: "var(--fallback-bc,oklch(var(--bc)))",
     confirmButtonColor: accentColor,
-    cancelButtonColor: "#6b7280",
+    cancelButtonColor: "#94a3b8",
+    customClass: { popup: 'rounded-[2rem]' }
   };
 
   const fetchUsers = async () => {
@@ -35,7 +35,7 @@ const AllUsers = () => {
       Swal.fire({
         ...swalConfig,
         title: "Error",
-        text: "Failed to fetch user list. (Authorization may be required)",
+        text: "Failed to fetch user list.",
         icon: "error",
       });
     } finally {
@@ -69,15 +69,10 @@ const AllUsers = () => {
               text: `${name} is now a ${newRole}.`,
               icon: "success",
               timer: 2000,
-            }); // 3. Refresh the users list in the table
-            fetchUsers(); // 4. CONDITIONALLY REFRESH THE ADMIN'S OWN ROLE // This ensures that if the Admin promotes *themselves* (unlikely but possible), // or if a different user's role is critical for the current page state, // the user's main role cache is updated immediately.
-            if (refetchUserRole) {
-              // Only refetch the current user's role if the user being updated is the logged-in user
-              // OR just refetch always after a role change, to be safe.
-              if (id === user?.uid) {
-                // Assuming Firebase UID matches MongoDB _id for this check, or use email/ID logic.
+            });
+            fetchUsers();
+            if (refetchUserRole && id === user?.uid) {
                 refetchUserRole();
-              }
             }
           }
         } catch (error) {
@@ -96,185 +91,127 @@ const AllUsers = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-                       {" "}
         <span
           className="loading loading-spinner loading-lg"
           style={{ color: accentColor }}
         ></span>
-                   {" "}
       </div>
     );
   }
 
   return (
-    <div className="p-4 md:p-8 bg-base-200 min-h-screen text-base-content">
-                 {" "}
+    <div className="p-4 md:p-8 bg-base-200 min-h-screen text-base-content animate-in fade-in duration-500">
       <header className="mb-10 text-center lg:text-left flex flex-col lg:flex-row items-center justify-between gap-6">
-                       {" "}
         <div>
-                             {" "}
-          <h2 className="text-4xl font-black flex items-center gap-3">
-                                   {" "}
-            <FaUsersCog style={{ color: accentColor }} />                       
-            User Management                    {" "}
+          <h2 className="text-4xl font-black italic tracking-tight flex items-center gap-3 uppercase">
+            <FaUsersCog style={{ color: accentColor }} />
+            User Management
           </h2>
-                             {" "}
-          <p className="opacity-60 mt-2 font-medium">
+          <p className="text-sm font-bold uppercase tracking-widest opacity-60 mt-2">
             Control access levels and assign system roles.
           </p>
-                         {" "}
+          <div className="h-1.5 w-24 bg-[#6366f1] mt-4 rounded-full hidden lg:block"></div>
         </div>
-                                        {/* 🎨 User Count Stat */}             
-         {" "}
-        <div className="stats shadow bg-base-100 border border-base-300">
-                             {" "}
-          <div className="stat py-2 px-8">
-                                   {" "}
-            <div className="stat-title text-xs uppercase font-bold">
+
+        <div className="stats shadow-xl bg-indigo-600 text-white border-none rounded-3xl">
+          <div className="stat py-3 px-8 text-center lg:text-left">
+            <div className="stat-title text-indigo-100 text-xs font-black uppercase tracking-widest italic">
               Total Members
             </div>
-                                   {" "}
-            <div className="stat-value text-3xl" style={{ color: accentColor }}>
+            <div className="stat-value text-3xl font-black">
               {users.length}
             </div>
-                               {" "}
           </div>
-                         {" "}
         </div>
-                   {" "}
       </header>
-                             {" "}
-      <div className="overflow-x-auto shadow-2xl rounded-3xl border border-base-300 bg-base-100">
-                       {" "}
+
+      <div className="overflow-x-auto shadow-2xl rounded-[2.5rem] border border-base-300 bg-base-100">
         <table className="table w-full">
-                              {/* Table Head */}                   {" "}
-          <thead className="bg-base-300">
-                                   {" "}
-            <tr className="text-base-content/70 uppercase text-xs tracking-wider">
-                                          <th>User</th>                         
-                <th>Contact Info</th>                           {" "}
-              <th className="text-center">Current Role</th>                     
-                    <th className="text-right">Assign Authority</th>           
-                         {" "}
+          <thead className="bg-indigo-50/50">
+            <tr className="text-indigo-600 uppercase text-xs font-black tracking-widest border-b border-base-300">
+              <th className="py-5">User</th>
+              <th className="py-5">Contact Info</th>
+              <th className="text-center py-5">Current Role</th>
+              <th className="text-right py-5">Assign Authority</th>
             </tr>
-                               {" "}
           </thead>
-                             {" "}
-          <tbody className="divide-y divide-base-300">
-                                   {" "}
+
+          <tbody className="divide-y divide-base-200">
             {users.map((item) => (
               <tr
                 key={item._id}
-                className="hover:bg-base-200/50 transition-colors"
+                className="hover:bg-indigo-50/30 transition-colors group"
               >
-                                               {" "}
-                <td>
-                                                     {" "}
+                <td className="py-5">
                   <div className="flex items-center gap-3">
-                                                           {" "}
                     <div className="avatar placeholder">
-                                                                 {" "}
-                      <div className="bg-neutral text-neutral-content rounded-full w-10">
-                                                                       {" "}
-                        <span className="text-xs">
-                          {item.name?.charAt(0) || "U"}
-                        </span>
-                                                                   {" "}
+                      <div className="bg-indigo-100 text-indigo-600 rounded-full w-10 font-bold border border-indigo-200 group-hover:scale-110 transition-transform">
+                        <span>{item.name?.charAt(0) || "U"}</span>
                       </div>
-                                                             {" "}
                     </div>
-                                                           {" "}
                     <div>
-                                                                 {" "}
-                      <div className="font-bold">
+                      <div className="font-bold text-base tracking-tight leading-tight">
                         {item.name || "Anonymous"}
                       </div>
-                                                                 {" "}
-                      <div className="text-[10px] opacity-50 uppercase tracking-tighter">
-                        UID: {item._id.slice(-6)}
+                      <div className="text-[10px] font-bold opacity-40 uppercase tracking-tighter">
+                        ID: {item._id.slice(-8)}
                       </div>
-                                                             {" "}
                     </div>
-                                                       {" "}
                   </div>
-                                                 {" "}
                 </td>
-                                               {" "}
-                <td className="text-sm opacity-80 font-mono">{item.email}</td> 
-                                             {" "}
+
+                <td className="text-sm font-medium opacity-80 italic">
+                  {item.email}
+                </td>
+
                 <td className="text-center">
-                                                     {" "}
                   <span
-                    className={`badge badge-md font-bold px-4 py-3 ${
+                    className={`badge font-black uppercase italic px-4 py-3 border-2 tracking-tighter text-[10px] ${
                       item.role === "admin"
-                        ? "badge-error badge-outline"
+                        ? "border-rose-500 text-rose-600 bg-rose-50"
                         : item.role === "librarian"
-                        ? "badge-primary badge-outline"
-                        : "badge-ghost opacity-50"
+                        ? "border-indigo-500 text-indigo-600 bg-indigo-50"
+                        : "border-slate-300 text-slate-500 bg-slate-50 opacity-60"
                     }`}
                   >
-                                                           {" "}
-                    {item.role || "User"}                                   {" "}
+                    {item.role || "User"}
                   </span>
-                                                 {" "}
                 </td>
-                                               {" "}
+
                 <td className="text-right">
-                                                     {" "}
                   <div className="flex justify-end gap-2">
-                                                           {" "}
-                    {/* Promote to Librarian */}                               
-                           {" "}
+                    {/* Promote to Librarian */}
                     <button
-                      onClick={() =>
-                        handleUpdateRole(item._id, item.name, "librarian")
-                      }
-                      className="btn btn-sm btn-outline btn-primary normal-case gap-2"
-                      disabled={
-                        item.role === "librarian" || item.role === "admin"
-                      }
+                      onClick={() => handleUpdateRole(item._id, item.name, "librarian")}
+                      className="btn btn-sm bg-white border-indigo-100 text-indigo-500 hover:bg-indigo-600 hover:text-white rounded-xl font-bold uppercase italic text-[10px] shadow-sm transition-all"
+                      disabled={item.role === "librarian" || item.role === "admin"}
                     >
-                                                                 {" "}
-                      <FaUserTag className="hidden sm:inline" />               
-                                                  Librarian                    
-                                         {" "}
+                      <FaUserTag className="hidden sm:inline text-sm" />
+                      Librarian
                     </button>
-                                                           {" "}
-                    {/* Promote to Admin */}                                   
-                       {" "}
+
+                    {/* Promote to Admin */}
                     <button
-                      onClick={() =>
-                        handleUpdateRole(item._id, item.name, "admin")
-                      }
-                      className="btn btn-sm btn-outline btn-error normal-case gap-2"
+                      onClick={() => handleUpdateRole(item._id, item.name, "admin")}
+                      className="btn btn-sm bg-white border-rose-100 text-rose-500 hover:bg-rose-600 hover:text-white rounded-xl font-bold uppercase italic text-[10px] shadow-sm transition-all"
                       disabled={item.role === "admin"}
                     >
-                                                                 {" "}
-                      <FaUserShield className="hidden sm:inline" />             
-                                                    Admin                      
-                                       {" "}
+                      <FaUserShield className="hidden sm:inline text-sm" />
+                      Admin
                     </button>
-                                                       {" "}
                   </div>
-                                                 {" "}
                 </td>
-                                           {" "}
               </tr>
             ))}
-                               {" "}
           </tbody>
-                         {" "}
         </table>
-                   {" "}
       </div>
-                 {" "}
+
       {users.length === 0 && (
-        <div className="text-center py-20 opacity-40 italic">
-                              <p>No user records found in the database.</p>     
-                   {" "}
+        <div className="text-center py-20 bg-base-100 mt-10 rounded-[2rem] border-2 border-dashed border-base-300">
+          <p className="font-bold uppercase tracking-widest opacity-30 italic">No user records found in the database.</p>
         </div>
       )}
-             {" "}
     </div>
   );
 };

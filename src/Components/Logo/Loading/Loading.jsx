@@ -1,8 +1,10 @@
 import React from "react";
+
 import { SkewLoader } from "react-spinners";
 
 const override = {
   display: "block",
+
   margin: "0 auto",
 };
 
@@ -24,20 +26,20 @@ const Loading = ({ loading = true, color = "#ffeb3b", size = 30 }) => {
       }}
     >
       <SkewLoader
-        color={color} 
+        color={color}
         loading={loading}
         cssOverride={override}
-        size={50} 
+        size={50}
         aria-label="Skew Loader"
       />
-  
+
       <p
         style={{
           marginTop: "40px",
           color: "#fff",
-          fontFamily: "monospace", 
+          fontFamily: "monospace",
           fontSize: "1.1em",
-          textShadow: "0 0 5px #ff0077", 
+          textShadow: "0 0 5px #ff0077",
         }}
       >
         Initiating sequence...

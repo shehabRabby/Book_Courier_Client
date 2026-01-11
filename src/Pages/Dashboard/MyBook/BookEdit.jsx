@@ -6,213 +6,247 @@ import toast from "react-hot-toast";
 import useAuth from "../../../Hooks/useAuth";
 import Loading from "../../../Components/Logo/Loading/Loading";
 import {
-    FaBook,
-    FaEdit,
-    FaMoneyBillWave,
-    FaSave,
-    FaArrowLeft,
-    FaUserEdit,
-    FaAlignLeft,
+  FaBook,
+  FaEdit,
+  FaMoneyBillWave,
+  FaSave,
+  FaArrowLeft,
+  FaUserEdit,
+  FaAlignLeft,
 } from "react-icons/fa";
 import { imageUpload } from "../../../Utiles/index.js";
-import useAxiosSecure from "../../../Hooks/useAxiosSecure"; 
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const BookEdit = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const accentColor = "#ff0077"; // Brand accent
-    // 1. Instantiate the secure Axios instance
-    const axiosSecure = useAxiosSecure(); 
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const accentColor = "#4f46e5"; // Brand accent
+  // 1. Instantiate the secure Axios instance
+  const axiosSecure = useAxiosSecure();
 
-    // --- 1. Fetch Book Data (useQuery) ---
-    const { data: book, isLoading, isError } = useQuery({
-        queryKey: ["bookToEdit", id],
-        queryFn: async () => {
-            // 2. FIX: Use axiosSecure for the GET request
-            const res = await axiosSecure.get(`/books/${id}`);
-            return res.data;
-        },
-        enabled: !!id,
-    });
+  // --- 1. Fetch Book Data (useQuery) ---
+  const {
+    data: book,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["bookToEdit", id],
+    queryFn: async () => {
+      // 2. FIX: Use axiosSecure for the GET request
+      const res = await axiosSecure.get(`/books/${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+  });
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-    useEffect(() => {
-        if (book) {
-            reset({
-                bookTitle: book.bookTitle || "",
-                authorName: book.authorName || "",
-                price: book.price || 0,
-                description: book.description || "",
-            });
-        }
-    }, [book, reset]);
+  useEffect(() => {
+    if (book) {
+      reset({
+        bookTitle: book.bookTitle || "",
+        authorName: book.authorName || "",
+        price: book.price || 0,
+        description: book.description || "",
+      });
+    }
+  }, [book, reset]);
 
-    // --- 2. Update Book Mutation (useMutation) ---
-    const updateMutation = useMutation({
-        mutationFn: async (updatedData) => {
-            // 3. FIX: Use axiosSecure for the PATCH request
-            const res = await axiosSecure.patch(`/books/${id}`, updatedData);
-            return res.data;
-        },
-        onSuccess: () => {
-            toast.success("Book updated successfully!");
-            queryClient.invalidateQueries({ queryKey: ["bookToEdit", id] });
-            // The queryKey for MyBooks was 'myLibrarianBooks', matching the last component
-            queryClient.invalidateQueries({ queryKey: ["myLibrarianBooks"] }); 
-            navigate("/dashboard/my-books");
-        },
-    });
+  // --- 2. Update Book Mutation (useMutation) ---
+  const updateMutation = useMutation({
+    mutationFn: async (updatedData) => {
+      // 3. FIX: Use axiosSecure for the PATCH request
+      const res = await axiosSecure.patch(`/books/${id}`, updatedData);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Book updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["bookToEdit", id] });
+      // The queryKey for MyBooks was 'myLibrarianBooks', matching the last component
+      queryClient.invalidateQueries({ queryKey: ["myLibrarianBooks"] });
+      navigate("/dashboard/my-books");
+    },
+  });
 
-    const onSubmit = async (data) => {
-        let finalPhotoUrl = book?.photo;
-        const { photo: photoFileList, ...restOfData } = data;
-        const newImageFile = photoFileList?.[0];
+  const onSubmit = async (data) => {
+    let finalPhotoUrl = book?.photo;
+    const { photo: photoFileList, ...restOfData } = data;
+    const newImageFile = photoFileList?.[0];
 
-        if (newImageFile) {
-            const uploadToast = toast.loading("Uploading new image...");
-            try {
-                // NOTE: imageUpload utility likely uses a third-party service (like ImgBB) 
-                // which should NOT use axiosSecure, only the backend API calls should.
-                const uploadResponse = await imageUpload(newImageFile);
-                finalPhotoUrl = uploadResponse?.data?.display_url;
-                toast.success("Image ready!", { id: uploadToast });
-            } catch (error) {
-                toast.error("Image upload failed.", { id: uploadToast });
-                return;
-            }
-        }
+    if (newImageFile) {
+      const uploadToast = toast.loading("Uploading new image...");
+      try {
+        // NOTE: imageUpload utility likely uses a third-party service (like ImgBB)
+        // which should NOT use axiosSecure, only the backend API calls should.
+        const uploadResponse = await imageUpload(newImageFile);
+        finalPhotoUrl = uploadResponse?.data?.display_url;
+        toast.success("Image ready!", { id: uploadToast });
+      } catch (error) {
+        toast.error("Image upload failed.", { id: uploadToast });
+        return;
+      }
+    }
 
-        const updatedBookData = {
-            ...restOfData,
-            photo: finalPhotoUrl,
-            updatedAt: new Date(),
-        };
-        updateMutation.mutate(updatedBookData);
+    const updatedBookData = {
+      ...restOfData,
+      photo: finalPhotoUrl,
+      updatedAt: new Date(),
     };
+    updateMutation.mutate(updatedBookData);
+  };
 
-    if (isLoading) return <Loading />;
-    if (isError || !book) return <div className="text-center text-error p-20">Data error.</div>;
+  if (isLoading) return <Loading />;
+  if (isError || !book)
+    return <div className="text-center text-error p-20">Data error.</div>;
 
-    return (
-        <div className="p-4 md:p-8 bg-base-200 min-h-screen text-base-content">
-            {/* Header with Back Button */}
-            <div className="max-w-4xl mx-auto mb-8 flex items-center justify-between">
-                <button 
-                    onClick={() => navigate(-1)} 
-                    className="btn btn-ghost gap-2 normal-case"
-                >
-                    <FaArrowLeft /> Back to List
-                </button>
-                <div className="badge badge-outline p-4 font-mono opacity-50">ID: {id}</div>
-            </div>
-
-            <header className="text-center mb-10">
-                <h1 className="text-4xl font-black flex items-center justify-center gap-3">
-                    <FaEdit style={{ color: accentColor }} />
-                    Edit Book Details
-                </h1>
-                <p className="opacity-60 mt-2 font-medium italic">"{book.bookTitle}"</p>
-            </header>
-
-            <div className="max-w-4xl mx-auto bg-base-100 p-6 md:p-10 rounded-3xl shadow-2xl border border-base-300">
-                
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
-                        {/* Left Column: Cover Preview */}
-                        <div className="flex flex-col items-center justify-center bg-base-200 rounded-2xl p-6 border-2 border-dashed border-base-300">
-                            <span className="text-xs font-bold uppercase opacity-40 mb-4 tracking-widest">Active Cover</span>
-                            <img
-                                src={book.photo}
-                                alt="Preview"
-                                className="w-40 h-56 object-cover rounded-xl shadow-xl border-4 border-base-100 mb-4"
-                            />
-                            <input
-                                {...register("photo")}
-                                type="file"
-                                className="file-input file-input-bordered file-input-sm w-full max-w-xs"
-                            />
-                            <p className="text-[10px] opacity-50 mt-2 text-center">Accepted: JPG, PNG, WEBP (Max 5MB)</p>
-                        </div>
-
-                        {/* Right Column: Key Fields */}
-                        <div className="space-y-4">
-                            <div>
-                                <label className="label font-bold text-xs uppercase opacity-70">
-                                    <span className="flex items-center gap-2"><FaBook /> Book Title</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input input-bordered w-full focus:border-indigo-500"
-                                    {...register("bookTitle", { required: "Title is required" })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="label font-bold text-xs uppercase opacity-70">
-                                    <span className="flex items-center gap-2"><FaUserEdit /> Author Name</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input input-bordered w-full"
-                                    {...register("authorName", { required: "Author is required" })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="label font-bold text-xs uppercase opacity-70">
-                                    <span className="flex items-center gap-2"><FaMoneyBillWave /> Price (USD)</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    className="input input-bordered w-full font-mono font-bold"
-                                    {...register("price", { required: true, valueAsNumber: true })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Bottom Area: Full Width Description */}
-                    <div>
-                        <label className="label font-bold text-xs uppercase opacity-70">
-                            <span className="flex items-center gap-2"><FaAlignLeft /> Description / Synopsis</span>
-                        </label>
-                        <textarea
-                            rows="5"
-                            className="textarea textarea-bordered w-full text-base"
-                            {...register("description")}
-                        ></textarea>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                        <button
-                            type="submit"
-                            className="btn flex-1 text-white border-none shadow-lg"
-                            style={{ backgroundColor: accentColor }}
-                            disabled={updateMutation.isLoading}
-                        >
-                            {updateMutation.isLoading ? (
-                                <span className="loading loading-spinner"></span>
-                            ) : (
-                                <><FaSave className="text-lg" /> Publish Changes</>
-                            )}
-                        </button>
-                        <button 
-                            type="button" 
-                            onClick={() => navigate(-1)}
-                            className="btn btn-outline"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
+  return (
+    <div className="p-4 md:p-8 bg-base-200 min-h-screen text-base-content">
+      {/* Header with Back Button */}
+      <div className="max-w-4xl mx-auto mb-8 flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="btn btn-ghost gap-2 normal-case"
+        >
+          <FaArrowLeft /> Back to List
+        </button>
+        <div className="badge badge-outline p-4 font-mono opacity-50">
+          ID: {id}
         </div>
-    );
+      </div>
+
+      <header className="text-center mb-10">
+        <h1 className="text-4xl font-black flex items-center justify-center gap-3">
+          <FaEdit style={{ color: accentColor }} />
+          Edit Book Details
+        </h1>
+        <p className="opacity-60 mt-2 font-medium italic">"{book.bookTitle}"</p>
+      </header>
+
+      <div className="max-w-4xl mx-auto bg-base-100 p-6 md:p-10 rounded-3xl shadow-2xl border border-base-300">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column: Cover Preview */}
+            <div className="flex flex-col items-center justify-center bg-base-200 rounded-2xl p-6 border-2 border-dashed border-base-300">
+              <span className="text-xs font-bold uppercase opacity-40 mb-4 tracking-widest">
+                Active Cover
+              </span>
+              <img
+                src={book.photo}
+                alt="Preview"
+                className="w-40 h-56 object-cover rounded-xl shadow-xl border-4 border-base-100 mb-4"
+              />
+              <input
+                {...register("photo")}
+                type="file"
+                className="file-input file-input-bordered file-input-sm w-full max-w-xs"
+              />
+              <p className="text-[10px] opacity-50 mt-2 text-center">
+                Accepted: JPG, PNG, WEBP (Max 5MB)
+              </p>
+            </div>
+
+            {/* Right Column: Key Fields */}
+            <div className="space-y-4">
+              <div>
+                <label className="label font-bold text-xs uppercase opacity-70">
+                  <span className="flex items-center gap-2">
+                    <FaBook /> Book Title
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full focus:border-indigo-500"
+                  {...register("bookTitle", { required: "Title is required" })}
+                />
+              </div>
+
+              <div>
+                <label className="label font-bold text-xs uppercase opacity-70">
+                  <span className="flex items-center gap-2">
+                    <FaUserEdit /> Author Name
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  {...register("authorName", {
+                    required: "Author is required",
+                  })}
+                />
+              </div>
+
+              <div>
+                <label className="label font-bold text-xs uppercase opacity-70">
+                  <span className="flex items-center gap-2">
+                    <FaMoneyBillWave /> Price (USD)
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="input input-bordered w-full font-mono font-bold"
+                  {...register("price", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Area: Full Width Description */}
+          <div>
+            <label className="label font-bold text-xs uppercase opacity-70">
+              <span className="flex items-center gap-2">
+                <FaAlignLeft /> Description / Synopsis
+              </span>
+            </label>
+            <textarea
+              rows="5"
+              className="textarea textarea-bordered w-full text-base"
+              {...register("description")}
+            ></textarea>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-6">
+            <button
+              type="submit"
+              className="btn flex-1 text-white border-none shadow-lg"
+              style={{ backgroundColor: accentColor }}
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Publishing...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <FaSave className="text-lg" />
+                  Publish Changes
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="btn btn-outline"
+              disabled={updateMutation.isPending} // পাবলিশ হওয়ার সময় যেন ক্যানসেল না করা যায়
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default BookEdit;

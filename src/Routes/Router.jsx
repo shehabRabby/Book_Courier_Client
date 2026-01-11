@@ -24,6 +24,7 @@ import Invoices from "../Pages/Dashboard/Invoices/invoices";
 import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
 import PaymentPage from "../Pages/Payment/PaymentPage";
 import BookEdit from "../Pages/Dashboard/MyBook/BookEdit";
+import DashboardHomePage from "../Layout/DashboardHomePage";
 
 export const router = createBrowserRouter([
   {
@@ -82,9 +83,10 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
-      // ===================================
-      // 👤 USER ROUTES (Protected by PrivateRoute)
-      // ===================================
+      {
+        index: true,
+        element: <DashboardHomePage></DashboardHomePage>,
+      },
       {
         path: "my-orders",
         Component: MyOrders, // Already protected by PrivateRoute wrapper on DashboardLayout

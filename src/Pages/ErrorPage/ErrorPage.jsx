@@ -6,7 +6,6 @@ import { FaExclamationTriangle, FaArrowLeft, FaCodeBranch } from 'react-icons/fa
 const ErrorPage = () => {
     const navigate = useNavigate();
 
-    // --- Framer Motion Variants ---
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -42,23 +41,23 @@ const ErrorPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-6 overflow-hidden relative">
+        <div className="min-h-screen bg-[#0b0f1a] text-white flex flex-col items-center justify-center p-6 overflow-hidden relative">
             
-            {/* 1. Floating Animated Background Elements */}
+            {/* 1. Floating Animated Background Glows (Updated to Amber/Gold) */}
             <motion.div
-                className="absolute top-1/4 left-1/4 w-32 h-32 bg-indigo-500 rounded-full opacity-10 blur-3xl"
+                className="absolute top-1/4 left-1/4 w-48 h-48 bg-amber-500 rounded-full opacity-5 blur-[100px]"
                 variants={floatVariants}
                 animate="animate"
             />
             <motion.div
-                className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-[#ff0077] rounded-full opacity-10 blur-3xl"
+                className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-slate-400 rounded-full opacity-5 blur-[120px]"
                 variants={floatVariants}
                 animate="animate"
             />
 
             {/* 2. Floating Code Fragment Icon */}
             <motion.div
-                className="absolute top-10 right-10 text-gray-700 text-6xl opacity-5"
+                className="absolute top-10 right-10 text-slate-800 text-6xl opacity-20"
                 variants={floatVariants}
                 animate="animate"
                 style={{ scale: 0.8 }}
@@ -66,7 +65,7 @@ const ErrorPage = () => {
                 <FaCodeBranch />
             </motion.div>
             
-            {/* Main Animated Container (z-index ensures it's above the background effects) */}
+            {/* Main Animated Container */}
             <motion.div
                 className="text-center relative z-10"
                 variants={containerVariants}
@@ -74,50 +73,54 @@ const ErrorPage = () => {
                 animate="visible"
             >
                 
-                {/* 404 Code (Reduced font size slightly for better fit) */}
+                {/* 404 Code (Updated to Amber/Gold with Glow) */}
                 <motion.div variants={itemVariants}>
                     <h1 
-                        // Adjusted font sizes to prevent vertical overlap: text-[10rem] sm:text-[14rem]
-                        className="text-[10rem] sm:text-[14rem] font-black leading-none text-[#ff0077] drop-shadow-lg mb-20"
-                        animate={{ scale: [1, 1.05, 1], opacity: [0.9, 1, 0.9] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        className="text-[10rem] sm:text-[14rem] font-black leading-none text-transparent bg-clip-text bg-gradient-to-b from-amber-400 to-amber-600 drop-shadow-[0_10px_30px_rgba(245,158,11,0.3)] mb-20 italic"
+                        animate={{ scale: [1, 1.02, 1], opacity: [0.9, 1, 0.9] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                     >
                         404
                     </h1>
                 </motion.div>
 
-                {/* Status Message (Adjusted Negative Margin to pull up and align below 404) */}
+                {/* Status Message */}
                 <motion.div 
-                    // Changed mt-[-5rem] to mt-[-3rem] (small screen) and mt-[-8rem] to mt-[-5rem] (large screen)
                     className="mt-[-3rem] sm:mt-[-5rem]" 
                     variants={itemVariants} 
                 >
-                    <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 flex items-center justify-center">
-                        <FaExclamationTriangle className="mr-3 text-yellow-400 drop-shadow-md" /> 
-                        Access Denied / Not Found
+                    <h2 className="text-3xl sm:text-5xl font-black text-white mb-6 flex items-center justify-center uppercase italic tracking-tighter">
+                        <FaExclamationTriangle className="mr-4 text-amber-500" /> 
+                        Coordinate Lost
                     </h2>
                 </motion.div>
 
-                {/* Descriptive Text (Slightly larger margin top for separation) */}
-                <motion.p variants={itemVariants} className="text-gray-400 text-xl max-w-xl mx-auto mb-12 mt-4 border-t border-b border-gray-700 py-4">
-                    The requested **digital coordinate** seems to be broken, vanished into the **void of the internet**, or never existed.
+                {/* Descriptive Text */}
+                <motion.p variants={itemVariants} className="text-slate-400 text-lg max-w-xl mx-auto mb-12 mt-4 border-t border-b border-slate-800 py-6 uppercase tracking-widest font-bold opacity-60">
+                    The requested <span className="text-amber-500/80 italic font-black">Digital Asset</span> has been moved, archived, or purged from the system core.
                 </motion.p>
                 
-                {/* Go Back Button */}
+                {/* Go Back Button (Updated to Premium Gold Button) */}
                 <motion.div variants={itemVariants}>
                     <button
-                        onClick={() => navigate(-1)} // Go back in browser history
-                        className="flex items-center mx-auto px-10 py-4 rounded-full shadow-2xl text-xl font-bold transition-all duration-300 
-                                   bg-gradient-to-r from-indigo-600 to-purple-600 text-white 
-                                   hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-offset-4 focus:ring-purple-500/80 focus:ring-offset-gray-900 
-                                   transform hover:scale-110 active:scale-105"
+                        onClick={() => navigate(-1)}
+                        className="flex items-center mx-auto px-12 py-4 rounded-full shadow-[0_10px_40px_rgba(245,158,11,0.2)] text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-300 
+                                   bg-amber-600 text-[#0b0f1a] 
+                                   hover:bg-amber-500 hover:shadow-[0_15px_50px_rgba(245,158,11,0.4)]
+                                   transform hover:scale-110 active:scale-95 italic"
                     >
-                        <FaArrowLeft className="mr-3" /> Get Me Out Of Here!
+                        <FaArrowLeft className="mr-3" /> Re-enter Command Center
                     </button>
                 </motion.div>
                 
             </motion.div>
             
+            {/* Bottom Accent */}
+            <div className="absolute bottom-10 opacity-20">
+                <p className="text-[8px] font-black uppercase tracking-[0.5em] italic text-slate-500">
+                    System Protocol Error • BookCourier v2.4
+                </p>
+            </div>
         </div>
     );
 };

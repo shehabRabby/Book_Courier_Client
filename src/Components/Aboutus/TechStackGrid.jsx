@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 // Assets
-import bannerTech from "../../assets/banner6.jpg"; // Use your technical-looking asset
+import bannerTech from "../../assets/new6.jpg"; // Use your technical-looking asset
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -33,9 +33,9 @@ const Footer = () => {
           {/* Links use link-hover and Link component */}
           <div className='flex flex-col gap-1'>
           <Link to="/about-us" className="link link-hover">About Us</Link>
-          <Link to="/" className="link link-hover">Services</Link>
-          <Link to="/blog" className="link link-hover">Blog</Link>
-          <Link to="/faq" className="link link-hover">FAQ</Link>
+          <Link to="/all-books" className="link link-hover">Books</Link>
+          <Link to="/about-us" className="link link-hover">Blog</Link>
+          <Link to="/" className="link link-hover">FAQ</Link>
 </div>
         </div>
 
@@ -53,7 +53,7 @@ const Footer = () => {
           <h6 className="footer-title">Follow Us</h6>
           <div className="grid grid-flow-col gap-4">
             <a 
-              href="https://x.com/your-username" 
+              href="https://x.com/rabby88773" 
               target="_blank" 
               rel="noopener noreferrer" 
               aria-label="Follow us on X"

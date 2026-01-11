@@ -77,7 +77,6 @@ const AllBook = () => {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <AllBookAnimation />
       <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
         {/* Header Section */}
@@ -186,6 +185,9 @@ const AllBook = () => {
           </>
         )}
       </section>
+
+      <AllBookAnimation />
+
     </div>
   );
 };
