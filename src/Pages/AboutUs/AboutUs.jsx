@@ -84,13 +84,13 @@ const AboutUs = () => {
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
-                to="/explore"
+                to="/"
                 className="btn btn-primary btn-md px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-lg shadow-primary/20"
               >
                 Explore Maps
               </Link>
               <Link
-                to="/story"
+                to="/"
                 className="btn btn-outline btn-md px-8 rounded-xl font-bold uppercase tracking-wider text-xs"
               >
                 Our Story

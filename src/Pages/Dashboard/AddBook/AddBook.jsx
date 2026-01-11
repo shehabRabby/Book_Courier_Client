@@ -45,7 +45,7 @@ const itemVariants = {
 
 const AddBook = () => {
   const { user } = useAuth();
-  const accentColor = "#6366f1"; // Changed to Indigo-500
+  const accentColor = "#6366f1"; 
   const axiosSecure = useAxiosSecure();
 
   const {
@@ -63,9 +63,10 @@ const AddBook = () => {
   } = useMutation({
     mutationFn: async (payload) => await axiosSecure.post(`/books`, payload),
     onSuccess: () => {
-      toast.success("Book Successfully Added");
+      // Eikhane success message set kora holo
+      toast.success("Book Successfully Added to Catalog!"); 
       mutationReset();
-      reset();
+      reset(); // Form clear hobe
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to add the book.");
@@ -104,7 +105,7 @@ const AddBook = () => {
     }
   };
 
-  // if (isPending) return <Loading />;
+  // Full page loading off kora holo jate success toast/message dekha jay
   if (isError) return <ErrorPage />;
 
   return (
@@ -381,8 +382,12 @@ const AddBook = () => {
               className="btn w-full text-lg font-black uppercase italic tracking-widest text-white border-none shadow-2xl shadow-indigo-200 hover:scale-[1.01] active:scale-[0.99] transition-all"
               style={{ backgroundColor: accentColor }}
             >
-              <FaCloudUploadAlt className="mr-3 text-2xl" />
-              {/* Ekhon eita thik moto "Adding Book..." dekhabe */}
+              {/* Spinner logic added inside button */}
+              {isPending ? (
+                <span className="loading loading-spinner loading-md"></span>
+              ) : (
+                <FaCloudUploadAlt className="mr-3 text-2xl" />
+              )}
               {isPending ? "Adding Book..." : "Catalog Book"}
             </button>
           </motion.div>
