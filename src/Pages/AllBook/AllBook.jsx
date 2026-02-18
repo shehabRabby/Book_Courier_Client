@@ -101,6 +101,8 @@ const AllBook = () => {
               Feltering Controls
             </h3>
           </div>
+          
+          {/* components */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <SearchSection
               searchTerm={searchTerm}
